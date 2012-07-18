@@ -1,0 +1,31 @@
+# config file for collmex
+
+common: &COMMON
+  url: https://www.collmex.de/cgi-bin/cgi.exe\?{{customer_id}},0,data_exchange
+  
+development:
+  <<: *COMMON
+  customer_id: 104156
+  user: 8866413
+  password: 2291502
+
+testing:
+  <<: *COMMON
+  customer_id: 
+  user: 
+  password:
+
+staging:
+  <<: *COMMON
+  customer_id: 
+  user: 
+  password:
+
+production:
+  <<: *COMMON
+  customer_id: 
+  user: 
+  password:
+
+
+
