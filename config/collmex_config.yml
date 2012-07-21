@@ -6,25 +6,25 @@ common: &COMMON
 development:
   <<: *COMMON
   customer_id: 104156
-  user: 8866413
+  username: 8866413
   password: 2291502
 
 testing:
   <<: *COMMON
   customer_id: 
-  user: 
+  username: 
   password:
 
 staging:
   <<: *COMMON
   customer_id: 
-  user: 
+  username: 
   password:
 
 production:
   <<: *COMMON
   customer_id: 
-  user: 
+  username: 
   password:
 
 
