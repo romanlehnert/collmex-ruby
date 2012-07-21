@@ -16,6 +16,15 @@ describe Collmex::Api do
 
   end
 
+  describe Collmex::Api::CustomerGet do
+
+    subject { Collmex::Api::CustomerGet.new( {:customer_id => 9999} ) }
+
+    spec = ["CUSTOMER_GET", 9999, 1]
+    specify { subject.to_a.should eql spec }
+
+  end
+
 end
 
 

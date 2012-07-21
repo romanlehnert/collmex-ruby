@@ -10,6 +10,29 @@ describe Collmex::Request do
   subject { described_class.new }
   specify { subject.should be_a Collmex::Request }
 
+  describe "instanitiation" do
+
+    it "should add the Login command to its own queue" do
+
+      request = Collmex::Request.new
+    
+      request.commands.count.should eql 1
+
+    end
+  end
+
+  describe ".add_command" do
+
+    it "should add the given command to its command array" do
+      request = Collmex::Request.new 
+      request.should be_a Collmex::Request
+      
+      request.commands = Array.new
+      request.add_command "asd"
+      request.commands.count.should eql 1
+    end
+  end
+
   describe ".do" do
 
     before(:each) do 
