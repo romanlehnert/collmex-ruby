@@ -13,4 +13,13 @@ RSpec.configure do |config|
 
 end
 
+
+def timed(name)  
+  start = Time.now
+  puts "\n[STARTED: #{name}]"
+  yield if block_given?
+  finish = Time.now
+  puts "[FINISHED: #{name} in #{(finish - start) * 1000} milliseconds]"
+end
+
 require "Collmex"
