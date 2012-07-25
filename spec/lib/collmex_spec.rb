@@ -1,6 +1,9 @@
 require 'spec_helper'
 require 'yaml'
 require 'collmex'
+require "vcr"
+require "pry"
+
 
 
 describe Collmex do
@@ -13,24 +16,33 @@ end
 describe "CollmexIntegration" do
 
   before(:each) do 
-    setup_login_data
+    Collmex.setup_login_data
+  end
+
+  after(:each) do
+    Collmex.reset_login_data
   end
 
   it "should build sample output" do
-    login = Collmex::Api::Login.new({ username: Collmex.username, password: Collmex.password })
-    customer_get = Collmex::Api::CustomerGet.new( {:customer_id => 9999} )
-    #puts login
-    #puts customer
 
     request = Collmex::Request.new
-    request.add_command customer_get
+
+    request.add_command Collmex::Api::CustomerGet.new(customer_id: 9999)
+    request.add_command Collmex::Api::AccdocGet.new()
+    request.add_command Collmex::Api::AccdocGet.new(accdoc_id: 1)
+
+    response = ""
+    VCR.use_cassette('standard_request') do
+      response = request.execute
+    end
   end
 
-  
-
-  
-
-
+  it "should make hashes as response" do
+    Collmex::Request.any_instance.stub(:execute)
+    request = Collmex::Request.run do
+      enqueue :accdoc_get
+    end
+  end
 end
 
 

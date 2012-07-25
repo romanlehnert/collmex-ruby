@@ -2,13 +2,30 @@ require "spec_helper"
 
 describe Collmex::Request do
 
-  describe "#uri" do
+  describe ".run" do
+    it "should return an instance of Colmex::Request" do
+      Collmex::Request.any_instance.stub(:execute)
+      Collmex::Request.run.should be_a Collmex::Request
+    end
+
+    it "should execute a given block" do
+      Collmex::Request.any_instance.stub(:execute)
+      Collmex::Request.any_instance.should_receive(:dump).with("arr").and_return("blaaaa")
+      Collmex::Request.run do
+        dump "arr"
+      end
+    end
+  end
+
+  describe ".uri" do
     subject { Collmex::Request.uri }
-    specify { subject.to_s.should eql "https://www.collmex.de/cgi-bin/cgi.exe?000000,0,data_exchange" }
+    specify { subject.to_s.should eql "https://www.collmex.de/cgi-bin/cgi.exe?#{Collmex.customer_id},0,data_exchange" }
   end
 
   subject { described_class.new }
   specify { subject.should be_a Collmex::Request }
+
+
 
   describe "instanitiation" do
 
@@ -21,7 +38,7 @@ describe Collmex::Request do
     end
   end
 
-  describe ".add_command" do
+  describe "#add_command" do
 
     it "should add the given command to its command array" do
       request = Collmex::Request.new 
@@ -103,34 +120,34 @@ describe Collmex::Request do
 
     it "should create a instance of net::http" do
       Net::HTTP.should_receive(:new).and_return(http)
-      subject.do
+      subject.execute
     end
 
     it "should use ssl" do
       http.should_receive("use_ssl=").with(true)
-      subject.do
+      subject.execute
     end
 
     it "should not verify ssl" do
       http.should_receive("verify_mode=").with(OpenSSL::SSL::VERIFY_NONE)
-      subject.do
+      subject.execute
     end
 
     it "shoud do the post_request" do
       http.should_receive(:request_post).with(anything,anything,{"Content-Type" => "text/csv"}).and_return(response)
-      subject.do
+      subject.execute
     end
 
     context "with a working connection" do
       
       it "should return the response body" do
-        subject.do.should eql "fuckmehard" 
+        subject.execute.should eql "fuckmehard" 
       end
 
       it "the response should be encoded in utf-8" do
         string = "Allgemeiner Gesch\xE4ftspartne".force_encoding("ASCII-8BIT")
         response.stub(:body).and_return(string)
-        subject.do.encoding.to_s.should eql "UTF-8"
+        subject.execute.encoding.to_s.should eql "UTF-8"
       end
 
     end

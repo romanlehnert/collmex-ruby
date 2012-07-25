@@ -4,7 +4,32 @@ require "uri"
 module Collmex
   class Request
 
-    attr_accessor :commands
+    attr_accessor :commands, :http
+
+    def self.run(&block)
+      Request.new.tap do |request|
+        request.instance_eval &block if block_given?
+        request.execute
+      end
+    end
+
+    def self.classify(term)
+      term.to_s.split("_").collect(&:capitalize).join
+    end
+
+    def enqueue(command, args = {}) 
+      if command.is_a? Symbol
+        cmd = Collmex::Api::const_get(self.class.classify(command)).new(args)
+        add_command cmd
+        return cmd
+      elsif Collmex::Api.is_a_collmex_command_obj?(command)
+        cmd = add_command command
+        return command
+      else
+        return false
+      end
+      cmd
+    end
 
     def initialize(add_login = true)
       @commands = Array.new
@@ -15,7 +40,7 @@ module Collmex
     def add_command(cmd)
       @commands << cmd
     end
-    
+
     def self.uri
       URI.parse "https://www.collmex.de/cgi-bin/cgi.exe\?#{Collmex.customer_id},0,data_exchange"
     end
