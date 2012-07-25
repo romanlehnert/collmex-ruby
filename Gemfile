@@ -6,4 +6,8 @@ group :development do
   gem 'guard-rspec'
   gem 'guard-bundler'
   gem "awesome_print"
+  gem 'webmock'
+  gem 'vcr'
+  gem "pry"
+  gem "psych"
 end

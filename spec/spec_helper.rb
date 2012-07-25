@@ -1,5 +1,6 @@
 require 'rspec'
 require "awesome_print"
+require "vcr"
 
 RSpec.configure do |config|
 
@@ -21,6 +22,13 @@ def timed(name)
   yield if block_given?
   finish = Time.now
   puts "[FINISHED: #{name} in #{(finish - start) * 1000} milliseconds]"
+end
+
+
+VCR.configure do |c|
+  c.allow_http_connections_when_no_cassette = true
+  c.cassette_library_dir = 'fixtures/vcr_cassettes'
+  c.hook_into :webmock
 end
 
 require "Collmex"
