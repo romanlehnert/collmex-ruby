@@ -7,11 +7,13 @@ module Collmex
     attr_accessor :customer_id
     attr_accessor :username
     attr_accessor :password
-  end
 
-  self.customer_id  = "000000"
-  self.username = "000000"
-  self.password = "000000"
+    def csv_opts
+      {
+        :col_sep => ";"
+      }
+    end
+
 
     def setup_login_data
       config = YAML.load_file('config/collmex_config.yml')["development"]
@@ -25,6 +27,9 @@ module Collmex
       Collmex.password    = "000000"
       Collmex.customer_id = "000000"
     end
+  end
 end
+
+Collmex.reset_login_data
 
 
