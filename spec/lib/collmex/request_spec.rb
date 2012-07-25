@@ -33,7 +33,54 @@ describe Collmex::Request do
     end
   end
 
-  describe ".do" do
+  describe "#classfy" do
+    subject { Collmex::Request }
+
+    specify do
+      subject.classify(:accdoc_get).should eql "AccdocGet"
+      subject.classify(:accDoc_get).should eql "AccdocGet"
+    end
+  end
+
+  describe "#enqueue" do
+
+    context "given a symbol command" do
+      let(:request) { Collmex::Request.new }
+
+      it "should return a command object" do
+        request.enqueue(:accdoc_get).should be_a Collmex::Api::AccdocGet
+      end
+
+      it "should enqueue the given comands" do 
+        initial_count = request.commands.count 
+        request.enqueue :accdoc_get 
+        request.enqueue :accdoc_get, :accdoc_id => 1
+        request.commands.count.should equal (initial_count + 2)
+      end
+    end
+
+    context "given a command object" do 
+
+      let(:request) { Collmex::Request.new }
+
+      it "should retun the command object" do
+        cmd_obj = Collmex::Api::AccdocGet.new()
+        request.enqueue(cmd_obj).should eql cmd_obj
+      end
+
+      it "should enqueue the command object" do 
+        initial_count = request.commands.count
+        cmd_obj = Collmex::Api::AccdocGet.new()
+        request.enqueue cmd_obj
+        request.commands.count.should eql (initial_count + 1)
+        request.commands.last.should eql cmd_obj
+      end
+    end
+        
+  end
+
+
+  describe ".execute" do
 
     before(:each) do 
       Net::HTTP.stub(:new).and_return(http)

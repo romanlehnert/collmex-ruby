@@ -24,21 +24,18 @@ module Collmex
       {"Content-Type" => "text/csv"}
     end
 
-    def do(payload = "")
-      http = Net::HTTP.new(self.class.uri.request_uri)
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    def execute(payload = "")
 
-      response = http.request_post(Collmex::Request.uri,payload,Collmex::Request.header_attributes)
+      @http = Net::HTTP.new(Collmex::Request.uri.host, Collmex::Request.uri.port)
+      @http.use_ssl = true
+      @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
+      payload = @commands.join
+
+
+      response = @http.request_post(Collmex::Request.uri.request_uri, payload, Collmex::Request.header_attributes)
       response.body.force_encoding("ISO8859-1") if response.body.encoding.to_s == "ASCII-8BIT"
-      response.body.encode("UTF-8")
-    end
-
-    def to_s
-      @commands.each do |c|
-        c.to_s + "\n"
-      end
+      return response.body.encode("UTF-8")
     end
 
   end
