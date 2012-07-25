@@ -3,22 +3,20 @@ require "csv"
 module Collmex
   class Api
 
+    def self.is_a_collmex_command_obj? obj
+      obj.class.name =~ /Collmex\:\:Api/
+    end
+
     class Template
 
       attr_accessor :opts
 
-      def csv_opts
-        {
-          :col_sep => ";"
-        }
-      end
-
       def to_csv
-        CSV.generate_line(self.to_a, self.csv_opts)
+        CSV.generate_line(self.to_a, Collmex.csv_opts)
       end
 
       def to_s
-        "Collex API Row: " + self.to_csv
+        self.to_csv
       end
     end
 
@@ -29,20 +27,26 @@ module Collmex
       end
 
       def to_a
-        ["LOGIN", opts[:username], opts[:password], "asd"]
+        ["LOGIN", opts[:username], opts[:password]]
       end
     end
 
     class CustomerGet < Template
-
       def initialize( opts = {:customer_id => nil } )
         self.opts = opts
       end
-
       def to_a
         ["CUSTOMER_GET", opts[:customer_id], 1]
       end
+    end
 
+    class AccdocGet < Template
+      def initialize( opts = {:accdoc_id => nil } )
+        self.opts = opts
+      end
+      def to_a
+        ["ACCDOC_GET", 1, nil, opts[:accdoc_id] ]
+      end
     end
 
 
