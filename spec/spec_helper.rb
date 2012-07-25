@@ -1,4 +1,5 @@
 require 'rspec'
+require "awesome_print"
 
 RSpec.configure do |config|
 

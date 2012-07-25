@@ -5,4 +5,5 @@ group :development do
   gem 'rspec'
   gem 'guard-rspec'
   gem 'guard-bundler'
+  gem "awesome_print"
 end
