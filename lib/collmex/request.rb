@@ -22,7 +22,7 @@ module Collmex
         cmd = Collmex::Api::const_get(self.class.classify(command)).new(args)
         add_command cmd
         return cmd
-      elsif Collmex::Api.is_a_collmex_command_obj?(command)
+      elsif Collmex::Api.is_a_collmex_api_line_obj?(command)
         cmd = add_command command
         return command
       else
