@@ -35,6 +35,7 @@ describe "CollmexIntegration" do
     VCR.use_cassette('standard_request') do
       response = request.execute
     end
+    #ap CSV.parse(response,Collmex.csv_opts)
   end
 
   it "should make hashes as response" do
