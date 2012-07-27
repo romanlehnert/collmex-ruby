@@ -1,17 +1,20 @@
 require "spec_helper"
 
 sample_spec = [  
-          { name: :a,    type: :string },
-          { name: :b,    type: :currency },
-          { name: :c,    type: :float },
-          { name: :d,    type: :integer },
+          { name: :identifyer,    type: :string,     fix: "BLA"                },
+          { name: :b,             type: :currency },
+          { name: :c,             type: :float },
+          { name: :d,             type: :integer },
+          { name: :e,             type: :date },
 ]
 
-empty_hash = { a: "", b: 0, c: 0.0, d: 0 }
+empty_hash = { identifyer: "BLA", b: nil, c: nil, d: nil, e: nil }
 
-empty_array = ["", 0, 0.0, 0]
-filled_array = ["asdasd", 20, 0.0, 0]
-filled_csv   = "asdasd;0,20;0,00;0\n"
+empty_array = ["BLA", nil, nil, nil, nil]
+
+filled_array = ["BLA", 20, 5.1, 10, Date.parse("12.10.1985")]
+
+filled_csv   = "BLA;0,20;5,10;10;19851012\n"
 
 
 describe Collmex::Api do
@@ -34,7 +37,7 @@ describe Collmex::Api do
               { type: :string,      input: "",                outcome: "" },
               { type: :string,      input: nil,               outcome: "" },
 
-              { type: :integer,     input: nil,               outcome: "0" },
+              { type: :integer,     input: nil,               outcome: "" },
               { type: :integer,     input: 2,                 outcome: "2" },
               { type: :integer,     input: 2.2,               outcome: "2" },
               { type: :integer,     input: -2.2,              outcome: "-2" },
@@ -64,8 +67,6 @@ describe Collmex::Api do
   end
 
   describe ".parse_field" do
-    klass = Collmex::Api
-  
     tests = [
               { type: :string,      input: "asd",             outcome: "asd" },
               { type: :string,      input: "2",               outcome: "2" },
@@ -74,12 +75,18 @@ describe Collmex::Api do
               { type: :string,      input: "-2.3",            outcome: "-2.3" },
               { type: :string,      input:  nil,              outcome: "" },
 
+              { type: :date,        input: nil,               outcome: nil },
+              { type: :date,        input: "19851012",        outcome: Date.parse("12.10.1985") },
+              { type: :date,        input: "1985/10/12",      outcome: Date.parse("12.10.1985") },
+              { type: :date,        input: "1985-10-12",      outcome: Date.parse("12.10.1985") },
+
+
               { type: :integer,     input: "2,3",             outcome: 2 },          # <= WARNING
               { type: :integer,     input: "2",               outcome: 2 },
               { type: :integer,     input: "2.2",             outcome: 2 },
               { type: :integer,     input: 2,                 outcome: 2 },
               { type: :integer,     input: 2.2,               outcome: 2 },
-              { type: :integer,     input: nil,               outcome: 0 },          # <= WARNING
+              { type: :integer,     input: nil,               outcome: nil },          # <= WARNING
 
               { type: :float,       input: "2",               outcome: 2.0 },
               { type: :float,       input: 2,                 outcome: 2.0 },
@@ -89,9 +96,10 @@ describe Collmex::Api do
               { type: :float,       input: "2,3",             outcome: 2.3 },
               { type: :float,       input: "-2,3",            outcome: -2.3 },
               { type: :float,       input: "2.2",             outcome: 2.2 },
-              { type: :float,       input: nil,               outcome: 0.0 },
+              { type: :float,       input: nil,               outcome: nil },
 
               { type: :currency,    input: "2",               outcome: 2 },
+              { type: :currency,    input: 0,                 outcome: 0 },
               { type: :currency,    input: 2,                 outcome: 2 },
               { type: :currency,    input: 2.20,              outcome: 220 },
               { type: :currency,    input: "0",               outcome: 0 },
@@ -103,7 +111,7 @@ describe Collmex::Api do
               { type: :currency,    input: "20,00",           outcome: 2000 },
               { type: :currency,    input: "20,12",           outcome: 2012 },
               { type: :currency,    input: "-20,12",          outcome: -2012 },
-              { type: :currency,    input: nil,               outcome: 0 },
+              { type: :currency,    input: nil,               outcome: nil },
               { type: :currency,    input: "-20.12",          outcome: -2012 },
               { type: :currency,    input: "-20.",            outcome: -2000 },
               { type: :currency,    input: "20.",             outcome: 2000 },
@@ -128,65 +136,98 @@ describe Collmex::Api do
             ]
     tests.each_with_index do |t,i|
       it "should parse #{t[:type]} value for \"#{t[:input]}\"" do
-        klass.parse_field( t[:input], t[:type]).should === t[:outcome]
+        described_class.parse_field( t[:input], t[:type]).should === t[:outcome]
       end
     end
   end
 end
 
-describe Collmex::Api::Line do 
+shared_examples_for "Collmex Api Command" do
 
   describe ".hashify" do
-    
-    string    = "teststring"
-    integer   = 421 
-    float     = 123.23
-    currency  = 100
+  
+    it "should parse the fields" do
+      string    = "BLA"
+      integer   = 421 
+      float     = 123.23
+      currency  = 200
+      date      = Date.parse("12.10.1985")
 
-    output = { a: string, b: currency, c: float, d: integer }
+      output = { identifyer: string, b: currency, c: float, d: integer, e: Date.parse("12.10.1985") }
 
-    before(:each) do 
-      Collmex::Api::Line.stub(:specification).and_return(sample_spec)
+      described_class.stub(:specification).and_return(sample_spec)
       Collmex::Api.stub(:parse_field).with(anything(),:string).and_return string
       Collmex::Api.stub(:parse_field).with(anything(),:float).and_return float
       Collmex::Api.stub(:parse_field).with(anything(),:integer).and_return integer
       Collmex::Api.stub(:parse_field).with(anything(),:currency).and_return currency
+      Collmex::Api.stub(:parse_field).with(anything(),:date).and_return date
+
+      tests = [
+                  [1,2,3,4],          
+                  [1,nil,3],     
+                  [1],          
+                  {a: 1, b:nil}, 
+                  {},           
+                  {c: 3},        
+                  "1;2;3",       
+                  "1;-2;3",      
+                  "1;-2,5;3",  
+                  ";;3",         
+      ]
+
+      tests.each do |testdata|
+        described_class.hashify(testdata).should eql output
+      end
     end
 
-    tests = [
-                [1,2,3,4],          
-                [1,nil,3],     
-                [1],          
-                {a: 1, b:nil}, 
-                {},           
-                {c: 3},        
-                "1;2;3",       
-                "1;-2;3",      
-                "1;-2,5;3",  
-                ";;3",         
-    ]
+    it "should set default values when nothing given" do
+      sample_default_spec = [  
+                        { name: :a,       type: :string,      default: "fixvalue" },
+                        { name: :b,       type: :currency,    default: 899 },
+                        { name: :c,       type: :integer,     default: 10 },
+                        { name: :d,       type: :float,       default: 2.99 },
+                    ] 
+      sample_default_outcome = {a: "fixvalue", b: 899, c: 10, d: 2.99}
+      described_class.stub(:specification).and_return sample_default_spec
+      described_class.hashify([]).should eql sample_default_outcome
+    end
 
-    tests.each do |testdata|
-      it "should return the expected output for input \"#{testdata}\"" do
-        Collmex::Api::Line.hashify(testdata).should eql output
-      end
+    it "should overwrite default values when data is given" do
+      sample_default_spec = [  
+                        { name: :a,       type: :string,      default: "fixvalue" },
+                        { name: :b,       type: :currency,    default: 899 },
+                        { name: :c,       type: :integer,     default: 10 },
+                        { name: :d,       type: :float,       default: 2.99 },
+                    ] 
+      sample_default_outcome = {a: "asd", b: 12, c: 1, d: 1.0}
+      described_class.stub(:specification).and_return sample_default_spec
+      described_class.hashify({a: "asd", b: 12, c: 1, d: 1}).should eql sample_default_outcome
+    end
+
+    it "should ignore given values for fix-value-fields" do
+      sample_fix_spec = [  
+                        { name: :a,       type: :string,      fix: "fixvalue" },
+                        { name: :b,       type: :currency,    fix: 899 },
+                        { name: :c,       type: :integer,     fix: 10 },
+                        { name: :d,       type: :float,       fix: 2.99 },
+                    ] 
+      sample_fix_outcome = {a: "fixvalue", b: 899, c: 10, d: 2.99}
+      described_class.stub(:specification).and_return sample_fix_spec
+      described_class.hashify([]).should eql sample_fix_outcome
     end
   end
 
-  
-
-  describe ".empty_hash" do
+  describe ".default_hash" do
     it "should hold a specification" do
-        Collmex::Api::Line.specification.should eql({})
-        Collmex::Api::Line.default_hash.should eql({})
+      described_class.stub(:specification).and_return([])
+      described_class.default_hash.should eql({})
 
-        Collmex::Api::Line.stub(:specification).and_return(sample_spec)
-        Collmex::Api::Line.default_hash.should eql(empty_hash)
-      end
+      described_class.stub(:specification).and_return(sample_spec)
+      described_class.default_hash.should eql(empty_hash)
+    end
   end
 
-
-  subject { Collmex::Api::Line.new }
+  subject { described_class.new }
 
   it { should respond_to :to_csv }
   it { should respond_to :to_a }
@@ -194,16 +235,14 @@ describe Collmex::Api::Line do
   it { should respond_to :to_h }
 
   describe "#initialize" do
-
     it "should set the instance_variable hash" do
-      line = Collmex::Api::Line.new()
-      line.instance_variable_get(:@hash).should be_a Hash
+      subject.instance_variable_get(:@hash).should be_a Hash
     end
 
     context "no params given" do
       it "should build the specified but empty hash" do
-        Collmex::Api::Line.stub(:default_hash).and_return(empty_hash)
-        line = Collmex::Api::Line.new
+        described_class.stub(:default_hash).and_return(empty_hash)
+        line = described_class.new
         line.to_h.should eql(empty_hash)
       end
     end
@@ -213,29 +252,12 @@ describe Collmex::Api::Line do
         input = {:a => "bla" }
         output = empty_hash.merge(input)
 
-        Collmex::Api::Line.stub(:default_hash).and_return(empty_hash)
-        Collmex::Api::Line.stub(:hashify).and_return(output)
-        line = Collmex::Api::Line.new(input)
+        described_class.stub(:default_hash).and_return(empty_hash)
+        described_class.stub(:hashify).and_return(output)
+        line = described_class.new(input)
         line.to_h.should eql (output)
       end
     end
-  end
-
-  describe "#to_a" do
-    it "should return the empty_hash translated to an array" do
-      Collmex::Api::Line.stub(:specification).and_return(sample_spec)
-      subject.to_a.should eql empty_array
-    end
-  end
-
-  describe "#to_h" do
-
-    it "should return the hash" do 
-      h = { first: 1, second: 2 }
-      subject.instance_variable_set(:@hash, h)
-      subject.to_h.should eql h
-    end
-
   end
 
   describe "#to_csv" do
@@ -243,38 +265,156 @@ describe Collmex::Api::Line do
       described_class.stub(:specification).and_return(sample_spec)
       subject.instance_variable_set(:@hash, described_class.hashify(filled_array))
       subject.to_csv.should eql filled_csv
-      #subject.to_csv.should eql CSV.generate_line(filled_array, Collmex.csv_opts)
     end
   end
+
+  describe "#to_h" do
+    it "should return the hash" do 
+      h = { first: 1, second: 2 }
+      subject.instance_variable_set(:@hash, h)
+      subject.to_h.should eql h
+    end
+  end
+
+  describe "#to_a" do
+    it "should return the empty_hash translated to an array" do
+      described_class.stub(:specification).and_return(sample_spec)
+      subject.to_a.should eql empty_array
+    end
+  end
+
+
 end
 
-shared_examples_for "Collmex Api Command" do
-  it { should respond_to :to_csv }
-  it { should respond_to :to_s }
+describe Collmex::Api::Line do
+  it_behaves_like "Collmex Api Command" 
 end
 
 describe Collmex::Api::Login do
   subject { Collmex::Api::Login.new({:username => 12, :password => 34}) }
   it_behaves_like "Collmex Api Command" 
-  spec = ["LOGIN", 12, 34]
-  specify { subject.to_a.should eql spec }
+  spec =  
+          [
+              { name: :identifyer,    type: :string,    fix: "LOGIN"   },
+              { name: :username,      type: :integer },
+              { name: :password,      type: :integer }
+          ]
+
+  specify { described_class.specification.should eql spec } 
+
+  output = ["LOGIN", 12, 34]
+  specify { subject.to_a.should eql output }
 end
 
 describe Collmex::Api::CustomerGet do
-  subject { Collmex::Api::CustomerGet.new( {:customer_id => 9999} ) }
   it_behaves_like "Collmex Api Command" 
-  spec = ["CUSTOMER_GET", 9999, 1]
-  specify { subject.to_a.should eql spec }
+
+  spec = 
+          [
+            { name: :identifyer       , type: :string    , fix: "CUSTOMER_GET"    },
+            { name: :id               , type: :integer                            },
+            { name: :company_id       , type: :integer   , default: 1             },
+            { name: :searchtext       , type: :string                             },
+            { name: :due_to_review    , type: :integer                            },
+            { name: :zip_code         , type: :string                             },
+            { name: :adress_group     , type: :integer                            },
+            { name: :price_group      , type: :integer                            },
+            { name: :discout_group    , type: :integer                            },
+            { name: :agent            , type: :integer                            },
+            { name: :only_changed     , type: :integer                            },
+            { name: :system_name      , type: :string                             },
+            { name: :inactive         , type: :integer                            },
+          ]
+
+  specify { described_class.specification.should eql spec } 
+
+  subject { described_class.new( {:customer_id => 9999} ) }
+
+  output = ["CUSTOMER_GET", nil, 1, "", nil, "", nil, nil, nil, nil, nil, "", nil] 
+
+  specify { subject.to_a.should eql output }
 end
 
 describe Collmex::Api::AccdocGet do
-  subject { Collmex::Api::AccdocGet.new( {:accdoc_id => nil} ) }
   it_behaves_like "Collmex Api Command" 
-  spec = ["ACCDOC_GET", 1, nil, nil]
-  specify { subject.to_a.should eql spec }
+
+  spec = 
+          [
+            { name: :identifyer       , type: :string    , fix: "ACCDOC_GET"     },
+            { name: :company_id       , type: :integer   , default: 1             },
+            { name: :business_year    , type: :integer                            },
+            { name: :id               , type: :integer                            },
+            { name: :account_id       , type: :integer                            },
+            { name: :cost_unit        , type: :integer                            },
+            { name: :customer_id      , type: :integer                            },
+            { name: :provider_id      , type: :integer                            },
+            { name: :asset_id         , type: :integer                            },
+            { name: :invoice_id       , type: :integer                            },
+            { name: :jorney_id        , type: :integer                            },
+            { name: :text             , type: :string                             },
+            { name: :date_start       , type: :date                               },
+            { name: :date_end         , type: :date                               },
+            { name: :cancellattion    , type: :integer                            },
+            { name: :changed_only     , type: :integer                            },
+            { name: :system_name      , type: :string                             },
+          ]
+
+
+
+  specify { described_class.specification.should eql spec } 
+
+  subject { described_class.new( {id: 1} ) }
+
+  output = ["ACCDOC_GET", 1, nil, 1, nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, ""]
+
+  specify { subject.to_a.should eql output }
 end
 
 
+describe Collmex::Api::Accdoc do   # fixme ACCDOC
+
+  it_behaves_like "Collmex Api Command" 
+
+  spec = 
+          [
+            { name: :identifyer       , type: :string    , fix: "ACCDOC"          },
+            { name: :company_id       , type: :integer   , default: 1             },
+            { name: :business_year    , type: :integer                            },
+            { name: :id               , type: :integer                            },
+            { name: :accdoc_date      , type: :date                               },
+            { name: :accounted_date   , type: :date                               },
+            { name: :test             , type: :string                             },
+            { name: :position_id      , type: :integer                            },
+            { name: :account_id       , type: :integer                            },
+            { name: :account_name     , type: :string                             },
+            { name: :should_have      , type: :integer                            },
+            { name: :amount           , type: :currency                           },
+            { name: :customer_id      , type: :integer                            },
+            { name: :customer_name    , type: :string                             },
+            { name: :provider_id      , type: :integer                            },
+            { name: :provider_name    , type: :string                             },
+            { name: :asset_id         , type: :integer                            },
+            { name: :asset_name       , type: :string                             },
+            { name: :canceled_accdoc  , type: :integer                            },
+            { name: :cost_unit        , type: :string                             },
+            { name: :invoice_id       , type: :string                             },
+            { name: :customer_order_id, type: :integer                            },
+            { name: :jorney_id        , type: :integer                            },
+            { name: :belongs_to_id    , type: :integer                            },
+            { name: :belongs_to_year  , type: :integer                            },
+            { name: :belongs_to_pos   , type: :integer                            },
+          ]
+
+
+
+  specify { described_class.specification.should eql spec } 
+
+  subject { described_class.new( {id: 1} ) }
+
+  output = ["ACCDOC", 1, nil, 1, nil, nil, "", nil, nil, "", nil, nil, nil, "", nil, "", nil, "", nil, "", "", nil, nil, nil, nil, nil]
+
+  specify { subject.to_a.should eql output }
+end
 
 
 

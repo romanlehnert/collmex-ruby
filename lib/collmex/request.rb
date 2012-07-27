@@ -28,7 +28,6 @@ module Collmex
       else
         return false
       end
-      cmd
     end
 
     def initialize(add_login = true)
@@ -39,6 +38,7 @@ module Collmex
 
     def add_command(cmd)
       @commands << cmd
+      cmd
     end
 
     def self.uri
@@ -55,7 +55,7 @@ module Collmex
       @http.use_ssl = true
       @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-      payload = @commands.join
+      payload = @commands.map{ |c| c.to_csv }.join
 
 
       response = @http.request_post(Collmex::Request.uri.request_uri, payload, Collmex::Request.header_attributes)

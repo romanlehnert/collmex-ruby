@@ -27,15 +27,16 @@ describe "CollmexIntegration" do
 
     request = Collmex::Request.new
 
-    request.add_command Collmex::Api::CustomerGet.new(customer_id: 9999)
-    request.add_command Collmex::Api::AccdocGet.new()
-    request.add_command Collmex::Api::AccdocGet.new(accdoc_id: 1)
+    c1 = request.add_command Collmex::Api::CustomerGet.new(customer_id: 9999)
+    c2 = request.add_command Collmex::Api::AccdocGet.new()
+    c3 = request.add_command Collmex::Api::AccdocGet.new(accdoc_id: 1)
 
     response = ""
     VCR.use_cassette('standard_request') do
       response = request.execute
     end
-    #ap CSV.parse(response,Collmex.csv_opts)
+    array =  CSV.parse(response,Collmex.csv_opts)
+    ap Collmex::Api::Accdoc.new(array[10])
   end
 
   it "should make hashes as response" do
