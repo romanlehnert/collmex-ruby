@@ -10,5 +10,4 @@ group :development, :test do
   gem 'vcr'
   gem "pry"
   gem "psych"
-  gem "rake"
 end
