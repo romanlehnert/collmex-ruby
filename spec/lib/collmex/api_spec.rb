@@ -63,9 +63,10 @@ describe Collmex::Api do
               { type: :currency,    input: "2",               outcome: "0,02" },
               { type: :currency,    input: "-2.23",           outcome: "-2,23" },   # <= WARNING
               { type: :currency,    input: "-2,23",           outcome: "-2,23" },   # <= WARNING
-              { type: :currency,    input: -2.00,             outcome: "-0,02" },
-              { type: :currency,    input: -2.90,             outcome: "-0,03" },
-              { type: :currency,    input: -102.90,           outcome: "-1,03" },    # <= WARNING
+              { type: :currency,    input: -2.00,             outcome: "-2,00" },
+              { type: :currency,    input: -2.90,             outcome: "-2,90" },
+              { type: :currency,    input: -2.999,             outcome: "-3,00" },
+              { type: :currency,    input: -102.90,           outcome: "-102,90" },    # <= WARNING
 
 
     ]
@@ -154,18 +155,18 @@ describe Collmex::Api do
               { type: :currency,    input: "-,20",            outcome: -20 },
               { type: :currency,    input: ",20",             outcome: 20 },
 
-              { type: :currency,    input: "20,000",          outcome: 20000 },
-              { type: :currency,    input: "123,456",         outcome: 123456 },
-              { type: :currency,    input: "123,456,789",     outcome: 123456789 },
-              { type: :currency,    input: "123.456.789",     outcome: 123456789 },
-              { type: :currency,    input: "23.456.789",      outcome: 23456789 },
-              { type: :currency,    input: "-23.456.000",     outcome: -23456000 },
-              { type: :currency,    input: "-23,456,000",     outcome: -23456000 },
+              { type: :currency,    input: "20,000",          outcome: 2000000 },
+              { type: :currency,    input: "123,456",         outcome: 12345600 },
+              { type: :currency,    input: "123,456,789",     outcome: 12345678900 },
+              { type: :currency,    input: "123.456.789",     outcome: 12345678900 },
+              { type: :currency,    input: "23.456.789",      outcome: 2345678900 },
+              { type: :currency,    input: "-23.456.000",     outcome: -2345600000},
+              { type: :currency,    input: "-23,456,000",     outcome: -2345600000 },
 
               { type: :currency,    input: "-23,456.00",      outcome: -2345600 },
               { type: :currency,    input: "23,456.13",       outcome: 2345613 },
 
-              { type: :currency,    input: "21,000",          outcome: 21000 },
+              { type: :currency,    input: "21,000",          outcome: 2100000 },
               { type: :currency,    input: "12.345,20",       outcome: 1234520 },
 
             ]

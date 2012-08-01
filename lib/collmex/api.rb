@@ -52,7 +52,7 @@ module Collmex
       when /\A-?\d+\z/ then str.to_i
       when /\A-?((\d){1,3})*([\.]\d{3})+([,]\d{2})\z/ then (str.gsub('.','').gsub(',','.').to_f * 100).to_i
       when /\A-?((\d){1,3})*([\,]\d{3})+([.]\d{2})\z/ then (str.gsub(',','').to_f * 100).to_i
-      when /\A-?((\d){1,3})*([\.\,]\d{3})+\z/ then str.gsub(',','').gsub('.','').to_i
+      when /\A-?((\d){1,3})*([\.\,]\d{3})+\z/ then str.gsub(',','').gsub('.','').to_i * 100
       else str.to_i
       end
     end
@@ -70,7 +70,7 @@ module Collmex
     def self.stringify_currency(data)
       case
       when data.is_a?(Integer) then sprintf("%.2f",(data.to_f / 100)).gsub('.',',')
-      when data.is_a?(Float) then sprintf("%.2f",(data.to_f / 100)).gsub('.',',')
+      when data.is_a?(Float) then sprintf("%.2f",(data.to_f)).gsub('.',',')
       when data.is_a?(String) 
         int = self.parse_currency(data) 
         sprintf("%.2f",(int.to_f / 100)).gsub('.',',')
@@ -107,6 +107,7 @@ module Collmex
       def self.hashify(data)
         hash = self.default_hash
         fields_spec = self.specification
+
         if data.is_a? Array
           fields_spec.each_with_index do |field_spec, index| 
             if !data[index].nil? && !field_spec.has_key?(:fix)

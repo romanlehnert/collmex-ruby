@@ -40,12 +40,13 @@ describe "CollmexIntegration" do
 
   it "should work with the block form" do
 
+   # ap  Collmex::Api::AccdocGet.new("ASDASD;2;2")
+
     request = Collmex::Request.run do
-      #enqueue :accdoc_get,   id: 1
       enqueue :customer_get, id: 9999
     end
 
-    ap request.response.first
+    #ap request.response
 
     request.response.last.success?.should eql true
   end
