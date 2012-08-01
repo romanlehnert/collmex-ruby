@@ -31,6 +31,16 @@ describe Collmex::Api do
     end
   end
 
+  describe ".line_class_exists?" do
+    it "should be true for a existing class" do
+      Collmex::Api.line_class_exists?("Line").should be true
+    end
+
+    it "should be false for a non existant class" do
+      Collmex::Api.line_class_exists?("asdasdasdasdaaBla").should be false
+    end
+  end
+
   describe ".stringify_field" do
     tests = [
               { type: :string,      input: "asd",             outcome: "asd" },
@@ -62,6 +72,31 @@ describe Collmex::Api do
     tests.each do |test|
       it "should represent #{test[:type]} \"#{test[:input].inspect}\" as \"#{test[:outcome]}\"" do
         described_class.stringify(test[:input],test[:type]).should === test[:outcome]
+      end
+    end
+  end
+
+
+  describe ".parse_line" do
+    context "when given a valid line" do
+      context "as an array" do
+        it "should instanciate an api line object" do
+          line = Collmex::Api::Login.new([12,34]).to_a
+          described_class.parse_line(line).should be_a Collmex::Api::Line
+        end
+      end
+      context "as n csv string" do
+        it "should instanciate an api line object" do
+          line = Collmex::Api::Login.new([12,34]).to_csv
+          described_class.parse_line(line).should be_a Collmex::Api::Line
+        end
+      end
+    end
+
+    context "when given an invalid line" do
+      it "should throw an error" do
+        line = ["OMG", 2,3,4,5,6]
+        lambda { described_class.parse_line(line) }.should raise_error 'Could not find a Collmex::Api::Line class for "Omg"'
       end
     end
   end
@@ -235,6 +270,15 @@ shared_examples_for "Collmex Api Command" do
   it { should respond_to :to_h }
 
   describe "#initialize" do
+    it "should raise an error if the specification is empty and the class is not Collmex::Api::Line" do
+      described_class.stub(:specification).and_return({})
+      if described_class.name == "Collmex::Api::Line"
+        lambda { described_class.new }.should_not raise_error
+      else
+        lambda { described_class.new }.should raise_error "#{described_class.name} has no specification"
+      end
+    end
+
     it "should set the instance_variable hash" do
       subject.instance_variable_get(:@hash).should be_a Hash
     end
@@ -368,6 +412,123 @@ describe Collmex::Api::AccdocGet do
   output = ["ACCDOC_GET", 1, nil, 1, nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, ""]
 
   specify { subject.to_a.should eql output }
+end
+
+
+describe Collmex::Api::Cmxknd do 
+
+  it_behaves_like "Collmex Api Command" 
+  spec = 
+          [
+            { name: :identifyer       , type: :string    , fix: "CMXKND"          },
+            { name: :customer_id      , type: :integer                            },
+            { name: :company_id       , type: :integer   , default: 1             },
+            { name: :salutation       , type: :string                             },
+            { name: :title            , type: :string                             },
+            { name: :firstname        , type: :string                             },
+            { name: :lastname         , type: :string                             },
+            { name: :comapyn          , type: :string                             },
+            { name: :department       , type: :string                             },
+            { name: :street           , type: :string                             },
+            { name: :zipcode          , type: :string                             },
+            { name: :city             , type: :string                             },
+            { name: :annotation       , type: :string                             },
+            { name: :inactive         , type: :integer                            },
+            { name: :country          , type: :string                             },
+            { name: :phone            , type: :string                             },
+            { name: :fax              , type: :string                             },
+            { name: :email            , type: :string                             },
+            { name: :account_id       , type: :string                             },
+            { name: :blz              , type: :string                             },
+            { name: :iban             , type: :string                             },
+            { name: :bic              , type: :string                             },
+            { name: :bank_name        , type: :string                             },
+            { name: :vat_id           , type: :string                             },
+            { name: :payment_condition, type: :integer                            },
+            { name: :dscout_group     , type: :integer                            },
+            { name: :deliver_conditions, type: :string                            },
+            { name: :deliver_conditions_additions, type: :string                  },
+            { name: :output_media     , type: :integer                            },
+            { name: :account_owner    , type: :string                             },
+            { name: :address_group    , type: :integer                            },
+            { name: :ebay_member      , type: :string                             },
+            { name: :price_group      , type: :integer                            },
+            { name: :currency         , type: :string                             },
+            { name: :agent            , type: :integer                            },
+            { name: :cost_unit        , type: :string                             },
+            { name: :due_to           , type: :date                               },
+            { name: :delivery_ban     , type: :integer                            },
+            { name: :building_servant , type: :integer                            },
+            { name: :account_id_at_customer, type: :string                        },
+            { name: :output_language  , type: :integer                            },
+            { name: :email_cc         , type: :string                             },
+            { name: :phone_2          , type: :string                             },
+          ]
+
+  specify { described_class.specification.should eql spec } 
+
+  subject { described_class.new( {id: 1} ) }
+
+  output = ["CMXKND", nil, 1, "", "", "", "", "", "", "", "", "", "", nil, "", "", "", "", "", "", "", "", "", "", nil, nil, "", "", nil, "", nil, "", nil, "", nil, "", nil, nil, nil, "", nil, "", ""]
+
+  specify { subject.to_a.should eql output }
+end
+
+
+describe Collmex::Api::Message do 
+
+  it_behaves_like "Collmex Api Command" 
+
+  spec = 
+          [
+            { name: :identifyer       , type: :string    , fix: "MESSAGE"         },
+            { name: :type             , type: :string                             },
+            { name: :id               , type: :integer                            },
+            { name: :text             , type: :string                             },
+            { name: :line             , type: :integer                            },
+          ]
+
+  specify { described_class.specification.should eql spec } 
+
+  subject { described_class.new(  ) }
+
+  output = ["MESSAGE", "", nil, "", nil]
+
+  specify { subject.to_a.should eql output }
+  
+  context "success" do
+    subject { described_class.new(type: "S") }
+    specify do 
+      subject.success?.should eql true 
+      subject.result.should eql :success 
+    end
+  end
+
+  context "warning" do
+    subject { described_class.new(type: "W") }
+    specify do 
+      subject.success?.should eql false
+      subject.result.should eql :warning
+    end
+  end
+
+  context "error" do
+    subject { described_class.new(type: "E") }
+    specify do 
+      subject.success?.should eql false
+      subject.result.should eql :error
+    end
+  end
+
+  context "undefined" do
+    subject { described_class.new() }
+    specify do 
+      subject.success?.should eql false
+      subject.result.should eql :undefined
+    end
+  end
+
+
 end
 
 

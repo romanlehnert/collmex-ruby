@@ -1,0 +1,3 @@
+
+- overwrite method not found for the collmex api line objects. when the method is found in the spec, the value from the hash should be given back.
+

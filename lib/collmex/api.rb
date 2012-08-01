@@ -6,6 +6,33 @@ module Collmex
     def self.is_a_collmex_api_line_obj? obj
       obj.class.name =~ /Collmex\:\:Api/
     end
+    
+    def self.line_class_exists?(class_name)
+      klass = Collmex::Api.const_get(class_name)
+      return klass.is_a?(Class)
+    rescue NameError
+      return false
+    end
+
+    def self.parse_line(line)
+      if line.is_a?(Array) and line.first.is_a?(String)
+        identifyer = line.first.split("_").map{ |s| s.downcase.capitalize }.join
+        if self.line_class_exists?(identifyer)
+          Collmex::Api.const_get(identifyer).new(line)
+        else
+          raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\""
+        end
+      elsif line.is_a?(String) && parsed_line = CSV.parse_line(line, Collmex.csv_opts)
+        identifyer = parsed_line.first.split("_").map{ |s| s.downcase.capitalize }.join
+        if self.line_class_exists?(identifyer)
+          Collmex::Api.const_get(identifyer).new(parsed_line)
+        else
+          raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\""
+        end
+      else
+        raise "Could not parse a Collmex::Api Line from #{line.inspect}"
+      end
+    end
 
     def self.parse_field(value, type, opts = nil)
       case type
@@ -104,8 +131,12 @@ module Collmex
 
 
       def initialize(arg = nil) 
+        #puts self.class.name 
         @hash = self.class.default_hash
         @hash = @hash.merge(self.class.hashify(arg)) if !arg.nil?
+        if self.class.specification.empty? && self.class.name.to_s != "Collmex::Api::Line"
+          raise "#{self.class.name} has no specification"
+        end
       end
 
      
@@ -116,6 +147,15 @@ module Collmex
         end
         array
       end
+
+      def to_stringified_array
+        array = []
+        self.class.specification.each do |spec|
+          array << Collmex::Api.stringify(@hash[spec[:name]], spec[:type])
+        end
+        array
+      end
+
 
       def to_csv
         array = []
@@ -150,6 +190,90 @@ module Collmex
               { name: :username,      type: :integer },
               { name: :password,      type: :integer }
           ]
+      end
+    end
+
+    class Cmxknd < Line
+      def self.specification
+          [
+            { name: :identifyer       , type: :string    , fix: "CMXKND"          },
+            { name: :customer_id      , type: :integer                            },
+            { name: :company_id       , type: :integer   , default: 1             },
+            { name: :salutation       , type: :string                             },
+            { name: :title            , type: :string                             },
+            { name: :firstname        , type: :string                             },
+            { name: :lastname         , type: :string                             },
+            { name: :comapyn          , type: :string                             },
+            { name: :department       , type: :string                             },
+            { name: :street           , type: :string                             },
+            { name: :zipcode          , type: :string                             },
+            { name: :city             , type: :string                             },
+            { name: :annotation       , type: :string                             },
+            { name: :inactive         , type: :integer                            },
+            { name: :country          , type: :string                             },
+            { name: :phone            , type: :string                             },
+            { name: :fax              , type: :string                             },
+            { name: :email            , type: :string                             },
+            { name: :account_id       , type: :string                             },
+            { name: :blz              , type: :string                             },
+            { name: :iban             , type: :string                             },
+            { name: :bic              , type: :string                             },
+            { name: :bank_name        , type: :string                             },
+            { name: :vat_id           , type: :string                             },
+            { name: :payment_condition, type: :integer                            },
+            { name: :dscout_group     , type: :integer                            },
+            { name: :deliver_conditions, type: :string                            },
+            { name: :deliver_conditions_additions, type: :string                  },
+            { name: :output_media     , type: :integer                            },
+            { name: :account_owner    , type: :string                             },
+            { name: :address_group    , type: :integer                            },
+            { name: :ebay_member      , type: :string                             },
+            { name: :price_group      , type: :integer                            },
+            { name: :currency         , type: :string                             },
+            { name: :agent            , type: :integer                            },
+            { name: :cost_unit        , type: :string                             },
+            { name: :due_to           , type: :date                               },
+            { name: :delivery_ban     , type: :integer                            },
+            { name: :building_servant , type: :integer                            },
+            { name: :account_id_at_customer, type: :string                        },
+            { name: :output_language  , type: :integer                            },
+            { name: :email_cc         , type: :string                             },
+            { name: :phone_2          , type: :string                             },
+          ]
+      end
+    end
+
+    class Message < Line
+      def self.specification
+          [
+            { name: :identifyer       , type: :string    , fix: "MESSAGE"         },
+            { name: :type             , type: :string                             },
+            { name: :id               , type: :integer                            },
+            { name: :text             , type: :string                             },
+            { name: :line             , type: :integer                            },
+          ]
+      end
+
+
+      def success?
+        if @hash.has_key?(:type) && !@hash[:type].empty? && @hash[:type] == "S"
+          true
+        else
+          false
+        end
+      end
+
+      def result
+        if @hash.has_key?(:type) && !@hash[:type].empty?
+          case @hash[:type]
+          when "S" then :success
+          when "W" then :warning
+          when "E" then :error
+          else :undefined
+          end
+        else
+          :undefined
+        end
       end
     end
 

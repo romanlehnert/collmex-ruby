@@ -27,14 +27,11 @@ describe Collmex::Request do
 
 
 
-  describe "instanitiation" do
+  describe "#initialize" do
 
     it "should add the Login command to its own queue" do
-
       request = Collmex::Request.new
-    
       request.commands.count.should eql 1
-
     end
   end
 
@@ -51,6 +48,7 @@ describe Collmex::Request do
   end
 
   describe "#classfy" do
+
     subject { Collmex::Request }
 
     specify do
@@ -76,7 +74,7 @@ describe Collmex::Request do
       end
     end
 
-    context "given a command object" do 
+    context "given a collmex api line object" do 
 
       let(:request) { Collmex::Request.new }
 
@@ -102,6 +100,7 @@ describe Collmex::Request do
     before(:each) do 
       Net::HTTP.stub(:new).and_return(http)
       Net::HTTP.stub(:request_post).and_return(response)
+      Collmex::Api.stub(:parse_line)
     end
 
     let(:http) do
@@ -115,10 +114,11 @@ describe Collmex::Request do
     let(:response) do 
       response = mock(Net::HTTPOK)
       response.stub(:body).and_return("fuckmehard")
+      response.stub(:code).and_return(200)
       response
     end
 
-    it "should create a instance of net::http" do
+    it "should create an instance of net::http" do
       Net::HTTP.should_receive(:new).and_return(http)
       subject.execute
     end
@@ -140,14 +140,17 @@ describe Collmex::Request do
 
     context "with a working connection" do
       
-      it "should return the response body" do
-        subject.execute.should eql "fuckmehard" 
+      it "should parse the response" do
+        subject.stub(:parse_response).and_return( [Collmex::Api::Accdoc.new])
+        subject.should_receive(:parse_response)
+        subject.execute
       end
-
       it "the response should be encoded in utf-8" do
         string = "Allgemeiner Gesch\xE4ftspartne".force_encoding("ASCII-8BIT")
         response.stub(:body).and_return(string)
-        subject.execute.encoding.to_s.should eql "UTF-8"
+        subject.execute      
+      
+        subject.instance_variable_get(:@raw_response)[:string].encoding.to_s.should eql "UTF-8"
       end
 
     end

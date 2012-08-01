@@ -23,7 +23,7 @@ describe "CollmexIntegration" do
     Collmex.reset_login_data
   end
 
-  it "should build sample output" do
+  it "should work with the long form" do
 
     request = Collmex::Request.new
 
@@ -31,19 +31,23 @@ describe "CollmexIntegration" do
     c2 = request.add_command Collmex::Api::AccdocGet.new()
     c3 = request.add_command Collmex::Api::AccdocGet.new(accdoc_id: 1)
 
-    response = ""
     VCR.use_cassette('standard_request') do
-      response = request.execute
+      request.execute
     end
-    array =  CSV.parse(response,Collmex.csv_opts)
-    ap Collmex::Api::Accdoc.new(array[10])
+
+      
   end
 
-  it "should make hashes as response" do
-    Collmex::Request.any_instance.stub(:execute)
+  it "should work with the block form" do
+
     request = Collmex::Request.run do
-      enqueue :accdoc_get
+      #enqueue :accdoc_get,   id: 1
+      enqueue :customer_get, id: 9999
     end
+
+    ap request.response.first
+
+    request.response.last.success?.should eql true
   end
 end
 
