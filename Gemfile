@@ -8,6 +8,5 @@ group :development, :test do
   gem "awesome_print"
   gem 'webmock'
   gem 'vcr'
-  gem "pry"
-  gem "psych"
+  gem "rake"
 end

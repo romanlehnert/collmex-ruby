@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'yaml'
 require 'collmex'
 require "vcr"
-require "pry"
 
 
 
