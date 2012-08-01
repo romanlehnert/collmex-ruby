@@ -31,4 +31,4 @@ VCR.configure do |c|
   c.hook_into :webmock
 end
 
-require "Collmex"
+require "collmex"
