@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-group :development do
+group :development, :test do
   gem 'guard'
   gem 'rspec'
   gem 'guard-rspec'
@@ -10,4 +10,5 @@ group :development do
   gem 'vcr'
   gem "pry"
   gem "psych"
+  gem "rake"
 end
