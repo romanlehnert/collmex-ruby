@@ -70,16 +70,19 @@ When you have finished building your request, you can execute it:
 ### The response
 When the request is executed, the response is parsed. Every answered line now sits as an object in our response-array:
 
+```ruby
     request.resonse.count        # number of returned lines
     request.response.last.class  # Collmex::Api::Message
 
 The content of a received line sits in the @hash-property of its Object. 
 
+```ruby
     request.response.last.hash    # holds the data. 
 
 ### Sugar
 You can write a request with less words by directly call the run-method and enqueue the lines inside a block (you can use symbols to identify the commands):
 
+```ruby
     request = Collmex::Request.run do
       enqueue :accdoc_get, id: 1
       enqueue :customer_get, id: 10
