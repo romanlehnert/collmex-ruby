@@ -33,12 +33,65 @@ Take a look at the response:
 
 It holds an array of all returned collmex api lines. 
 
+
 ## Digging deeper
 
 ### API Lines
-Collmex unfortunately has a batch csv api. Everything is represented as a single line in a csv file. Here we have one object per csv line (that inherits from Collmex::Api::Line). 
+Collmex unfortunately has a batch csv api. Every request can hold a bunch of lines. The Documentation can be found [here](http://www.collmex.de/cgi-bin/cgi.exe?1005,1,help,api).
+
+You can build a line by instanciating its corresponding class that inherits from Collmex::Api::Line. Under the hood, the lines are translated into 
+csv before we send them to collmex, or parsed from csv whn we receive them from collmex. Just give the params of the line as a hash. Every line object has a @hash property that holds the data. 
+
 
 #### ACCDOC_GET
-ACCDOC_GET is the line that holds the query information for getting an accounting document. 
+For building a line object that asks for the Accountingdocument with id 1:
+
+    accdoc_get = Collmex::Api::AccdocGet.new( id: 1 )
+
+### CUSTOMER_GET
+A line that asks for the customer with id: 10
+    customer_get = Collmex::Api::CustomerGet.new( id: 10 )
+
+
+### The request
+A request is initiated with 
+
+    request = Collmex::Request.new
+
+And you can enque your commands to it: 
+
+    request.enque Collmex::Api::AccdocGet.new(id: 1)
+    request.enque Collmex::Api::CustomerGet.new(id: 1)
+
+When you have finished building your request, you can execute it:
+
+    request.execute
+
+### The response
+When the request is executed, the response is parsed. Every answered line now sits as an object in our response-array:
+
+    request.resonse.count        # number of returned lines
+    request.response.last.class  # Collmex::Api::Message
+
+The content of a received line sits in the @hash-property of its Object. 
+
+    request.response.last.hash    # holds the data. 
+
+### Datatypes
+
+While collmex sends and receives only strings via csv, we treat the data as ruby object. 
+
+#### Collmex String
+Its represented as a string in ruby. There is no length restriction. So you have to care for yourself that collmex can handle all the contents of a Char field. 
+
+#### Collmex Float
+Collmex floats are represented as floats in ruby too. You can give it a string or a integer too. When we send something to collmex in a float field, it is limited to 2 decimals. 
+
+#### Collmex Currency
+Collmex has Currency as its own datatype. In ruby we use the smallest unit (cent in €) and take the amount as an integer. We have put some special parsing methods when a string should represent the alue of a currency field. Jus take a look at the spec/lib/collmex/api_spec.rb to see how we handle it. 
+
+#### Collmex Integer
+Integers are the simples datatype and transparent between ruby and collmex. There is just some special handling that cares for delimiters in numbers to represent the correct value 
+
 
 
