@@ -11,7 +11,7 @@ A Ruby lib for speaking with the german accounting software collmex.
 Just add it to your gemfile:
 
 ```ruby
-    gem "collmex-ruby"
+gem "collmex-ruby"
 ```
 
 ## Configuration
@@ -19,7 +19,7 @@ Just add it to your gemfile:
 In your code (in a rails-projekt you might create a config/initializers/collmex-ruby.rb) you can setup your credentials:
 
 ```ruby
-    Collmex.setup_login_data( username: "123456", password: "123456", customer_id: "123456" )
+Collmex.setup_login_data( username: "123456", password: "123456", customer_id: "123456" )
 ```
 
 ## Use it
@@ -27,16 +27,16 @@ In your code (in a rails-projekt you might create a config/initializers/collmex-
 For example to get a customer and and accounting document, just enqueue the commands to the request:
 
 ```ruby
-    request = Collmex::Request.run do
-      enqueue :customer_get, id: 9999
-      enqueue :accdoc_get,   id: 1
-    end
+request = Collmex::Request.run do
+  enqueue :customer_get, id: 9999
+  enqueue :accdoc_get,   id: 1
+end
 ```
 
 Take a look at the response:
 
 ```ruby
-    request.response
+request.response
 ```
 
 It holds an array of all returned collmex api lines. 
@@ -55,14 +55,14 @@ csv before we send them to collmex, or parsed from csv whn we receive them from 
 For building a line object that asks for the Accountingdocument with id 1:
 
 ```ruby
-    accdoc_get = Collmex::Api::AccdocGet.new( id: 1 )
+accdoc_get = Collmex::Api::AccdocGet.new( id: 1 )
 ```
 
 ### CUSTOMER_GET
 A line that asks for the customer with id: 10
 
 ```ruby
-    customer_get = Collmex::Api::CustomerGet.new( id: 10 )
+customer_get = Collmex::Api::CustomerGet.new( id: 10 )
 ```
 
 
@@ -70,33 +70,33 @@ A line that asks for the customer with id: 10
 A request is initiated with 
 
 ```ruby
-    request = Collmex::Request.new
+request = Collmex::Request.new
 ```
 And you can enque your commands to it: 
 
 ```ruby
-    request.enque Collmex::Api::AccdocGet.new(id: 1)
-    request.enque Collmex::Api::CustomerGet.new(id: 1)
+request.enque Collmex::Api::AccdocGet.new(id: 1)
+request.enque Collmex::Api::CustomerGet.new(id: 1)
 ```
 
 When you have finished building your request, you can execute it:
 
 ```ruby
-    request.execute
+request.execute
 ```
 
 ### The response
 When the request is executed, the response is parsed. Every answered line now sits as an object in our response-array:
 
 ```ruby
-    request.resonse.count        # number of returned lines
-    request.response.last.class  # Collmex::Api::Message
+request.resonse.count        # number of returned lines
+request.response.last.class  # Collmex::Api::Message
 ```
 
 The content of a received line sits in the @hash-property of its Object. 
 
 ```ruby
-    request.response.last.hash    # holds the data. 
+request.response.last.hash    # holds the data. 
 ```
 ### Sugar
 You can write a request with less words by directly call the run-method and enqueue the lines inside a block (you can use symbols to identify the commands):
