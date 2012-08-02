@@ -102,4 +102,8 @@ Collmex has Currency as its own datatype. In ruby we use the smallest unit (cent
 Integers are the simples datatype and transparent between ruby and collmex. There is just some special handling that cares for delimiters in numbers to represent the correct value 
 
 
+# Authors:
+This lib was originally written for [palabea](http://www.palabea.com)
+
+Roman
 
