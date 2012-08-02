@@ -36,7 +36,11 @@ module Collmex
       @commands     = []
       @raw_response = {}
 
-      add_command Collmex::Api::Login.new({username: Collmex.username, password: Collmex.password})
+      if Collmex.username.nil? || Collmex.password.nil? || Collmex.customer_id.nil?
+        raise "No credentials for collmex given"
+      else
+        add_command Collmex::Api::Login.new({username: Collmex.username, password: Collmex.password})
+      end
     end
 
 

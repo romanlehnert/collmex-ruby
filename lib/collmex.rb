@@ -4,9 +4,20 @@ require 'collmex/request'
 module Collmex
 
   class << self
-    attr_accessor :customer_id
-    attr_accessor :username
-    attr_accessor :password
+
+    attr_accessor :username, :password, :customer_id
+
+    def setup_login_data(logindata)
+      Collmex.username    = logindata[:username]
+      Collmex.password    = logindata[:password]
+      Collmex.customer_id = logindata[:customer_id]
+    end
+
+    def reset_login_data
+      Collmex.username    = nil
+      Collmex.password    = nil
+      Collmex.customer_id = nil
+    end
 
     def csv_opts
       {
@@ -14,22 +25,5 @@ module Collmex
       }
     end
 
-
-    def setup_login_data
-      config = YAML.load_file('config/collmex_config.yml')["development"]
-      Collmex.username    = config["username"]
-      Collmex.password    = config["password"]
-      Collmex.customer_id = config["customer_id"]
-    end
-
-    def reset_login_data
-      Collmex.username    = "000000"
-      Collmex.password    = "000000"
-      Collmex.customer_id = "000000"
-    end
   end
 end
-
-Collmex.reset_login_data
-
-

@@ -29,6 +29,11 @@ describe Collmex::Request do
 
   describe "#initialize" do
 
+    it "should raise an error if no credentials given" do
+      Collmex.reset_login_data
+      lambda { Collmex::Request.new }.should raise_error "No credentials for collmex given"
+    end
+
     it "should add the Login command to its own queue" do
       request = Collmex::Request.new
       request.commands.count.should eql 1

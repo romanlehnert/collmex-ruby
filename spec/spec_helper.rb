@@ -10,7 +10,11 @@ RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
   config.before(:each) do
+    Collmex.setup_login_data({username: "8866413", password: "2291502", customer_id: "104156"})
+  end
 
+  config.after(:each) do
+    Collmex.reset_login_data
   end
 
 end

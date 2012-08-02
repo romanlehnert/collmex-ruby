@@ -15,11 +15,11 @@ end
 describe "CollmexIntegration" do
 
   before(:each) do 
-    Collmex.setup_login_data
+    Collmex.setup_login_data({username: 8866413, password: 2291502, customer_id: 104156})
   end
 
   after(:each) do
-    Collmex.reset_login_data
+   # Collmex.setup_login_data
   end
 
   it "should work with the long form" do
