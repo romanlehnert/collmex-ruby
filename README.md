@@ -102,10 +102,10 @@ The content of a received line sits in the @hash-property of its Object.
 You can write a request with less words by directly call the run-method and enqueue the lines inside a block (you can use symbols to identify the commands):
 
 ```ruby
-    request = Collmex::Request.run do
-      enqueue :accdoc_get, id: 1
-      enqueue :customer_get, id: 10
-    end
+request = Collmex::Request.run do
+  enqueue :accdoc_get, id: 1
+  enqueue :customer_get, id: 10
+end
 ```
 
 ### Datatypes
