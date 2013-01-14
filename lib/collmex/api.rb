@@ -6,7 +6,7 @@ module Collmex
     def self.is_a_collmex_api_line_obj? obj
       obj.class.name =~ /Collmex\:\:Api/
     end
-    
+
     def self.line_class_exists?(class_name)
       klass = Collmex::Api.const_get(class_name)
       return klass.is_a?(Class)
@@ -66,13 +66,13 @@ module Collmex
       when :date then data.strftime("%Y%m%d") unless data.nil?
       end
     end
-        
+
     def self.stringify_currency(data)
       case
       when data.is_a?(Integer) then sprintf("%.2f",(data.to_f / 100)).gsub('.',',')
       when data.is_a?(Float) then sprintf("%.2f",(data.to_f)).gsub('.',',')
-      when data.is_a?(String) 
-        int = self.parse_currency(data) 
+      when data.is_a?(String)
+        int = self.parse_currency(data)
         sprintf("%.2f",(int.to_f / 100)).gsub('.',',')
       else data
       end
@@ -92,7 +92,7 @@ module Collmex
 
       def self.default_hash
         hash = {}
-        self.specification.each_with_index do |field_spec, index| 
+        self.specification.each_with_index do |field_spec, index|
           if field_spec.has_key? :fix
             hash[field_spec[:name]] = field_spec[:fix]
           elsif field_spec.has_key? :default
@@ -109,21 +109,21 @@ module Collmex
         fields_spec = self.specification
 
         if data.is_a? Array
-          fields_spec.each_with_index do |field_spec, index| 
+          fields_spec.each_with_index do |field_spec, index|
             if !data[index].nil? && !field_spec.has_key?(:fix)
-              hash[field_spec[:name]] = Collmex::Api.parse_field(data[index], field_spec[:type]) 
+              hash[field_spec[:name]] = Collmex::Api.parse_field(data[index], field_spec[:type])
             end
           end
         elsif data.is_a? Hash
           fields_spec.each_with_index do |field_spec, index|
             if data.key?(field_spec[:name]) && !field_spec.has_key?(:fix)
-              hash[field_spec[:name]] = Collmex::Api.parse_field(data[field_spec[:name]], field_spec[:type]) 
+              hash[field_spec[:name]] = Collmex::Api.parse_field(data[field_spec[:name]], field_spec[:type])
             end
           end
         elsif data.is_a?(String) && parsed = CSV.parse_line(data,Collmex.csv_opts)
-          fields_spec.each_with_index do |field_spec, index| 
+          fields_spec.each_with_index do |field_spec, index|
             if !data[index].nil? && !field_spec.has_key?(:fix)
-              hash[field_spec[:name]] = Collmex::Api.parse_field(parsed[index], field_spec[:type]) 
+              hash[field_spec[:name]] = Collmex::Api.parse_field(parsed[index], field_spec[:type])
             end
           end
         end
@@ -131,8 +131,8 @@ module Collmex
       end
 
 
-      def initialize(arg = nil) 
-        #puts self.class.name 
+      def initialize(arg = nil)
+        #puts self.class.name
         @hash = self.class.default_hash
         @hash = @hash.merge(self.class.hashify(arg)) if !arg.nil?
         if self.class.specification.empty? && self.class.name.to_s != "Collmex::Api::Line"
@@ -140,7 +140,7 @@ module Collmex
         end
       end
 
-     
+
       def to_a
         array = []
         self.class.specification.each do |spec|
@@ -204,7 +204,7 @@ module Collmex
             { name: :title            , type: :string                             },
             { name: :firstname        , type: :string                             },
             { name: :lastname         , type: :string                             },
-            { name: :comapyn          , type: :string                             },
+            { name: :company          , type: :string                             },
             { name: :department       , type: :string                             },
             { name: :street           , type: :string                             },
             { name: :zipcode          , type: :string                             },
@@ -221,6 +221,7 @@ module Collmex
             { name: :bic              , type: :string                             },
             { name: :bank_name        , type: :string                             },
             { name: :vat_id           , type: :string                             },
+            { name: :ust_ldnr         , type: :string                             },
             { name: :payment_condition, type: :integer                            },
             { name: :dscout_group     , type: :integer                            },
             { name: :deliver_conditions, type: :string                            },
