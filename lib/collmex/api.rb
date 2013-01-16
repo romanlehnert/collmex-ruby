@@ -363,7 +363,7 @@ module Collmex
       def self.specification
           [
             {name: :identifyer, type: :string,   fix: "CMXORD-2"},
-            {name: :order_number, type: :integer},
+            {name: :order_id, type: :integer},
             {name: :position, type: :integer},
             {name: :order, type: :integer}, # Should be left blank
             {name: :company_id, type: :integer, default: 1},
