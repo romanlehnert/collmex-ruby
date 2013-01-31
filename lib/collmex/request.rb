@@ -74,7 +74,7 @@ module Collmex
       @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
       # http://www.collmex.de/faq.html#zeichensatz_import
-      encoded_body = payload.encode("ISO8859-1")
+      encoded_body = payload.encode("ISO8859-1", undef: :replace) # Do not blow up on undefined characters in ISO8859-1
       response = @http.request_post(Collmex::Request.uri.request_uri, encoded_body, Collmex::Request.header_attributes)
       response.body.force_encoding("ISO8859-1") if response.body.encoding.to_s == "ASCII-8BIT"
 
