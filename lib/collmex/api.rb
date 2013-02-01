@@ -188,8 +188,8 @@ module Collmex
       def self.specification
           [
               { name: :identifyer,    type: :string,    fix: "LOGIN"   },
-              { name: :username,      type: :integer },
-              { name: :password,      type: :integer }
+              { name: :username,      type: :string },
+              { name: :password,      type: :string }
           ]
       end
     end
