@@ -15,11 +15,7 @@ end
 describe "CollmexIntegration" do
 
   before(:each) do 
-    Collmex.setup_login_data({username: 8866413, password: 2291502, customer_id: 104156})
-  end
-
-  after(:each) do
-   # Collmex.setup_login_data
+    Collmex.setup_login_data({username: 4109488, password: 6642111, customer_id: 112249})
   end
 
   it "should work with the long form" do
@@ -33,21 +29,18 @@ describe "CollmexIntegration" do
     VCR.use_cassette('standard_request') do
       request.execute
     end
-
-      
   end
 
   it "should work with the block form" do
 
-   # ap  Collmex::Api::AccdocGet.new("ASDASD;2;2")
-
     request = Collmex::Request.run do
       enqueue :customer_get, id: 9999
     end
+    
+    VCR.use_cassette('standard_request') do
+      request.response.last.success?.should eql true
+    end
 
-    #ap request.response
-
-    request.response.last.success?.should eql true
   end
 end
 
