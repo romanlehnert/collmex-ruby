@@ -9,5 +9,7 @@ Gem::Specification.new do |s|
   s.files       = Dir['lib/**/*.rb']
   s.homepage    = 'https://github.com/romanlehnert/collmex-ruby'
   s.add_development_dependency 'rspec', '~> 2.5'
+  s.add_development_dependency 'webmock'
+  s.add_development_dependency 'vcr'
   s.test_files  = Dir.glob("{spec,test}/**/*.rb")
 end
