@@ -6,7 +6,7 @@ module Collmex
     def self.is_a_collmex_api_line_obj? obj
       obj.class.name =~ /Collmex\:\:Api/
     end
-    
+
     def self.line_class_exists?(class_name)
       klass = Collmex::Api.const_get(class_name)
       return klass.is_a?(Class)
@@ -16,14 +16,14 @@ module Collmex
 
     def self.parse_line(line)
       if line.is_a?(Array) and line.first.is_a?(String)
-        identifyer = line.first.split("_").map{ |s| s.downcase.capitalize }.join
+        identifyer = line.first.split(/_|-/).map { |s| s.downcase.capitalize }.join
         if self.line_class_exists?(identifyer)
           Collmex::Api.const_get(identifyer).new(line)
         else
           raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\""
         end
       elsif line.is_a?(String) && parsed_line = CSV.parse_line(line, Collmex.csv_opts)
-        identifyer = parsed_line.first.split("_").map{ |s| s.downcase.capitalize }.join
+        identifyer = parsed_line.first.split(/_|-/).map { |s| s.downcase.capitalize }.join
         if self.line_class_exists?(identifyer)
           Collmex::Api.const_get(identifyer).new(parsed_line)
         else
@@ -66,13 +66,13 @@ module Collmex
       when :date then data.strftime("%Y%m%d") unless data.nil?
       end
     end
-        
+
     def self.stringify_currency(data)
       case
       when data.is_a?(Integer) then sprintf("%.2f",(data.to_f / 100)).gsub('.',',')
       when data.is_a?(Float) then sprintf("%.2f",(data.to_f)).gsub('.',',')
-      when data.is_a?(String) 
-        int = self.parse_currency(data) 
+      when data.is_a?(String)
+        int = self.parse_currency(data)
         sprintf("%.2f",(int.to_f / 100)).gsub('.',',')
       else data
       end
@@ -92,7 +92,7 @@ module Collmex
 
       def self.default_hash
         hash = {}
-        self.specification.each_with_index do |field_spec, index| 
+        self.specification.each_with_index do |field_spec, index|
           if field_spec.has_key? :fix
             hash[field_spec[:name]] = field_spec[:fix]
           elsif field_spec.has_key? :default
@@ -109,21 +109,21 @@ module Collmex
         fields_spec = self.specification
 
         if data.is_a? Array
-          fields_spec.each_with_index do |field_spec, index| 
+          fields_spec.each_with_index do |field_spec, index|
             if !data[index].nil? && !field_spec.has_key?(:fix)
-              hash[field_spec[:name]] = Collmex::Api.parse_field(data[index], field_spec[:type]) 
+              hash[field_spec[:name]] = Collmex::Api.parse_field(data[index], field_spec[:type])
             end
           end
         elsif data.is_a? Hash
           fields_spec.each_with_index do |field_spec, index|
             if data.key?(field_spec[:name]) && !field_spec.has_key?(:fix)
-              hash[field_spec[:name]] = Collmex::Api.parse_field(data[field_spec[:name]], field_spec[:type]) 
+              hash[field_spec[:name]] = Collmex::Api.parse_field(data[field_spec[:name]], field_spec[:type])
             end
           end
         elsif data.is_a?(String) && parsed = CSV.parse_line(data,Collmex.csv_opts)
-          fields_spec.each_with_index do |field_spec, index| 
+          fields_spec.each_with_index do |field_spec, index|
             if !data[index].nil? && !field_spec.has_key?(:fix)
-              hash[field_spec[:name]] = Collmex::Api.parse_field(parsed[index], field_spec[:type]) 
+              hash[field_spec[:name]] = Collmex::Api.parse_field(parsed[index], field_spec[:type])
             end
           end
         end
@@ -131,8 +131,8 @@ module Collmex
       end
 
 
-      def initialize(arg = nil) 
-        #puts self.class.name 
+      def initialize(arg = nil)
+        #puts self.class.name
         @hash = self.class.default_hash
         @hash = @hash.merge(self.class.hashify(arg)) if !arg.nil?
         if self.class.specification.empty? && self.class.name.to_s != "Collmex::Api::Line"
@@ -140,7 +140,7 @@ module Collmex
         end
       end
 
-     
+
       def to_a
         array = []
         self.class.specification.each do |spec|
@@ -188,8 +188,8 @@ module Collmex
       def self.specification
           [
               { name: :identifyer,    type: :string,    fix: "LOGIN"   },
-              { name: :username,      type: :integer },
-              { name: :password,      type: :integer }
+              { name: :username,      type: :string },
+              { name: :password,      type: :string }
           ]
       end
     end
@@ -204,7 +204,7 @@ module Collmex
             { name: :title            , type: :string                             },
             { name: :firstname        , type: :string                             },
             { name: :lastname         , type: :string                             },
-            { name: :comapyn          , type: :string                             },
+            { name: :company          , type: :string                             },
             { name: :department       , type: :string                             },
             { name: :street           , type: :string                             },
             { name: :zipcode          , type: :string                             },
@@ -221,6 +221,7 @@ module Collmex
             { name: :bic              , type: :string                             },
             { name: :bank_name        , type: :string                             },
             { name: :vat_id           , type: :string                             },
+            { name: :ust_ldnr         , type: :string                             },
             { name: :payment_condition, type: :integer                            },
             { name: :dscout_group     , type: :integer                            },
             { name: :deliver_conditions, type: :string                            },
@@ -357,5 +358,118 @@ module Collmex
       end
     end
 
+    # Creating Orders
+    class Cmxord2 < Line
+      def self.specification
+          [
+            {name: :identifyer, type: :string,   fix: "CMXORD-2"},
+            {name: :order_id, type: :integer},
+            {name: :position, type: :integer},
+            {name: :order, type: :integer}, # Should be left blank
+            {name: :company_id, type: :integer, default: 1},
+            {name: :customer_id, type: :integer},
+            {name: :customer_title, type: :string},
+            {name: :customer_title_2, type: :string},
+            {name: :customer_first_name, type: :string},
+            {name: :customer_name, type: :string},
+            {name: :customer_company, type: :string},
+            {name: :customer_department, type: :string},
+            {name: :customer_street, type: :string},
+            {name: :customer_zip, type: :string},
+            {name: :customer_place, type: :string},
+            {name: :customer_country, type: :string}, # ISO code (DE)
+            {name: :customer_phone, type: :string},
+            {name: :customer_phone_2, type: :string},
+            {name: :customer_fax, type: :string},
+            {name: :customer_email, type: :string},
+            {name: :acct, type: :string},
+            {name: :customer_blz, type: :string},
+            {name: :customer_account_holders, type: :string},
+            {name: :customer_iban, type: :string},
+            {name: :customer_bic, type: :string},
+            {name: :customer_bank, type: :string},
+            {name: :customer_ustidnr, type: :string},
+            {name: :reserved, type: :integer}, # Should be left blank
+            {name: :order_id_for_customer, type: :string},
+            {name: :order_date, type: :date},
+            {name: :price_date, type: :date},
+            {name: :terms_of_payment, type: :integer},
+            {name: :currency, type: :string}, # ISO code (EUR)
+            {name: :price_group, type: :integer},
+            {name: :discount_group, type: :integer},
+            {name: :closing_off, type: :integer},
+            {name: :discount_ground, type: :string},
+            {name: :confirmation_text, type: :string},
+            {name: :final_text, type: :string},
+            {name: :internal_memo, type: :string},
+            {name: :billing_allowed, type: :integer},
+            {name: :partial_deliveries_allowed, type: :integer},
+            {name: :deleted, type: :integer},
+            {name: :status, type: :integer},
+            {name: :language, type: :integer}, # 0 = German, 1 = English
+            {name: :editor, type: :integer},
+            {name: :mediator, type: :integer},
+            {name: :system_name, type: :string},
+            {name: :closing_off_2, type: :currency},
+            {name: :closing_off_2_base, type: :string},
+            {name: :reserved_2, type: :string}, # Should be left blank
+            {name: :canceled_on, type: :date},
+            {name: :dispatch, type: :integer},
+            {name: :returns, type: :currency},
+            {name: :collection_fee, type: :currency},
+            {name: :terms_of_delivery, type: :string},
+            {name: :additional_delivery_conditions, type: :string},
+            {name: :delivery_address_title, type: :string},
+            {name: :delivery_address_title_2, type: :string},
+            {name: :delivery_address_first_name, type: :string},
+            {name: :delivery_address_name, type: :string},
+            {name: :delivery_address_company, type: :string},
+            {name: :delivery_address_department, type: :string},
+            {name: :delivery_address_street, type: :string},
+            {name: :delivery_address_zip, type: :string},
+            {name: :delivery_address_place, type: :string},
+            {name: :delivery_address_country, type: :string}, # ISO code (DE)
+            {name: :delivery_address_phone, type: :string},
+            {name: :delivery_address_phone_2, type: :string},
+            {name: :delivery_address_fax, type: :string},
+            {name: :delivery_address_email, type: :string},
+            {name: :position_type, type: :integer},
+            {name: :product_number, type: :string},
+            {name: :product_description, type: :string},
+            {name: :unit, type: :string}, # ISO code (EUR)
+            {name: :quantity, type: :float},
+            {name: :price, type: :currency},
+            {name: :delivery_date, type: :date},
+            {name: :price_quantity, type: :float},
+            {name: :item_discount, type: :currency}, # In percents
+            {name: :position_value, type: :currency},
+            {name: :product, type: :integer},
+            {name: :tax_classification, type: :integer},
+            {name: :control_abroad, type: :integer},
+            {name: :revenue_element, type: :integer},
+            {name: :fully_delivered, type: :integer},
+            {name: :finally_settled, type: :integer}
+          ]
+      end
+    end
+
+    class SalesOrderGet < Line
+      def self.specification
+        [
+          {name: :identifyer,             type: :string, fix: "SALES_ORDER_GET"},
+          {name: :order_id,               type: :string},
+          {name: :company_id,             type: :integer},
+          {name: :customer_id,            type: :integer},
+          {name: :date_from,              type: :date},
+          {name: :date_to,                type: :date},
+          {name: :order_id_for_customer,  type: :string},
+          {name: :format,                 type: :string}, # 1 means ZIP file with PDF
+          {name: :changed_only,           type: :integer},
+          {name: :system_name,            type: :string},
+          {name: :created_by_system_only, type: :integer}, # 1 means take only records created by the "system_name"
+          {name: :without_stationary,     type: :integer}
+        ]
+      end
+    end
   end
 end
