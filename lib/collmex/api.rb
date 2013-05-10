@@ -485,10 +485,10 @@ module Collmex
       end
     end
 
-    class Accbal < Line
+    class AccBal < Line
       def self.specification
           [
-            {name: :identifyer,      type: :string, fix: "ACCBAL"},
+            {name: :identifyer,      type: :string, fix: "ACC_BAL"},
             {name: :account_number,  type: :integer},
             {name: :account_name,    type: :string},
             {name: :account_balance, type: :currency}

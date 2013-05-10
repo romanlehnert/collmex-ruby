@@ -602,13 +602,13 @@ describe Collmex::Api::Accdoc do   # fixme ACCDOC
 end
 
 
-describe Collmex::Api::Accbal do   # fixme ACCDOC
+describe Collmex::Api::AccBal do
 
   it_behaves_like "Collmex Api Command"
 
   spec =
           [
-            {name: :identifyer,      type: :string, fix: "ACCBAL"},
+            {name: :identifyer,      type: :string, fix: "ACC_BAL"},
             {name: :account_number,  type: :integer},
             {name: :account_name,    type: :string},
             {name: :account_balance, type: :currency}
@@ -618,7 +618,7 @@ describe Collmex::Api::Accbal do   # fixme ACCDOC
 
   subject { described_class.new( {id: 1} ) }
 
-  output = ["ACCBAL", nil, "", nil]
+  output = ["ACC_BAL", nil, "", nil]
 
   specify { subject.to_a.should eql output }
 end
