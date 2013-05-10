@@ -20,14 +20,14 @@ module Collmex
         if self.line_class_exists?(identifyer)
           Collmex::Api.const_get(identifyer).new(line)
         else
-          raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\""
+          raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\" (\"#{line.first}\")"
         end
       elsif line.is_a?(String) && parsed_line = CSV.parse_line(line, Collmex.csv_opts)
         identifyer = parsed_line.first.split(/_|-/).map { |s| s.downcase.capitalize }.join
         if self.line_class_exists?(identifyer)
           Collmex::Api.const_get(identifyer).new(parsed_line)
         else
-          raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\""
+          raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\" (\"#{parsed_line.first}\")"
         end
       else
         raise "Could not parse a Collmex::Api Line from #{line.inspect}"
