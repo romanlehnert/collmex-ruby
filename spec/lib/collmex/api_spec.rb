@@ -97,7 +97,7 @@ describe Collmex::Api do
     context "when given an invalid line" do
       it "should throw an error" do
         line = ["OMG", 2,3,4,5,6]
-        lambda { described_class.parse_line(line) }.should raise_error 'Could not find a Collmex::Api::Line class for "Omg"'
+        lambda { described_class.parse_line(line) }.should raise_error 'Could not find a Collmex::Api::Line class for "Omg" ("OMG")'
       end
     end
   end
