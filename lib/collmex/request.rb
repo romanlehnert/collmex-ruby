@@ -4,6 +4,7 @@ require "uri"
 module Collmex
   class Request
     attr_accessor :commands, :http
+    attr_accessor :debug
 
     def self.run(&block)
       Request.new.tap do |request|
@@ -79,7 +80,13 @@ module Collmex
       response.body.force_encoding("ISO8859-1") if response.body.encoding.to_s == "ASCII-8BIT"
 
       @raw_response[:string] = response.body.encode("UTF-8")
-      @raw_response[:array]  = CSV.parse(@raw_response[:string], Collmex.csv_opts)
+
+      begin
+        @raw_response[:array]  = CSV.parse(@raw_response[:string], Collmex.csv_opts)
+      rescue => e
+        STDERR.puts "CSV.parse failed with string: #{@raw_response[:string]}" if self.debug
+        raise e
+      end
 
       parse_response
     end
