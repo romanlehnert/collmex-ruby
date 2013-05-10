@@ -72,11 +72,11 @@ A request is initiated with
 ```ruby
 request = Collmex::Request.new
 ```
-And you can enque your commands to it:
+And you can enqueue your commands to it:
 
 ```ruby
-request.enque Collmex::Api::AccdocGet.new(id: 1)
-request.enque Collmex::Api::CustomerGet.new(id: 1)
+request.enqueue Collmex::Api::AccdocGet.new(id: 1)
+request.enqueue Collmex::Api::CustomerGet.new(id: 1)
 ```
 
 When you have finished building your request, you can execute it:
@@ -96,7 +96,7 @@ request.response.last.class  # Collmex::Api::Message
 The content of a received line sits in the @hash-property of its Object.
 
 ```ruby
-request.response.last.hash    # holds the data.
+request.response.last.to_h    # holds the data.
 ```
 ### Sugar
 You can write a request with less words by directly call the run-method and enqueue the lines inside a block (you can use symbols to identify the commands):

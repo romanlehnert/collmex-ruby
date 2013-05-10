@@ -97,7 +97,7 @@ describe Collmex::Api do
     context "when given an invalid line" do
       it "should throw an error" do
         line = ["OMG", 2,3,4,5,6]
-        lambda { described_class.parse_line(line) }.should raise_error 'Could not find a Collmex::Api::Line class for "Omg"'
+        lambda { described_class.parse_line(line) }.should raise_error 'Could not find a Collmex::Api::Line class for "Omg" ("OMG")'
       end
     end
   end
@@ -415,6 +415,28 @@ describe Collmex::Api::AccdocGet do
   specify { subject.to_a.should eql output }
 end
 
+describe Collmex::Api::AccbalGet do
+  it_behaves_like "Collmex Api Command"
+
+  spec =
+        [
+          {name: :identifyer,             type: :string, fix: "ACCBAL_GET"},
+          {name: :company_id,             type: :integer, default: 1},
+          {name: :fiscal_year,            type: :integer, default: Date.today.year},
+          {name: :date_to,                type: :date},
+          {name: :account_number,         type: :integer},
+          {name: :account_group,          type: :integer}
+        ]
+
+  specify { described_class.specification.should eql spec }
+
+  subject { described_class.new( {id: 1} ) }
+
+  output = ["ACCBAL_GET", 1, Date.today.year, nil, nil, nil]
+
+  specify { subject.to_a.should eql output }
+end
+
 
 describe Collmex::Api::Cmxknd do
 
@@ -580,4 +602,24 @@ describe Collmex::Api::Accdoc do   # fixme ACCDOC
 end
 
 
+describe Collmex::Api::AccBal do
+
+  it_behaves_like "Collmex Api Command"
+
+  spec =
+          [
+            {name: :identifyer,      type: :string, fix: "ACC_BAL"},
+            {name: :account_number,  type: :integer},
+            {name: :account_name,    type: :string},
+            {name: :account_balance, type: :currency}
+          ]
+
+  specify { described_class.specification.should eql spec }
+
+  subject { described_class.new( {id: 1} ) }
+
+  output = ["ACC_BAL", nil, "", nil]
+
+  specify { subject.to_a.should eql output }
+end
 
