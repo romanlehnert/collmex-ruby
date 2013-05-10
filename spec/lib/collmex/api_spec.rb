@@ -415,6 +415,28 @@ describe Collmex::Api::AccdocGet do
   specify { subject.to_a.should eql output }
 end
 
+describe Collmex::Api::AccbalGet do
+  it_behaves_like "Collmex Api Command"
+
+  spec =
+        [
+          {name: :identifyer,             type: :string, fix: "ACCBAL_GET"},
+          {name: :company_id,             type: :integer, default: 1},
+          {name: :fiscal_year,            type: :integer, default: Date.today.year},
+          {name: :date_to,                type: :date},
+          {name: :account_number,         type: :integer},
+          {name: :account_group,          type: :integer}
+        ]
+
+  specify { described_class.specification.should eql spec }
+
+  subject { described_class.new( {id: 1} ) }
+
+  output = ["ACCBAL_GET", 1, Date.today.year, nil, nil, nil]
+
+  specify { subject.to_a.should eql output }
+end
+
 
 describe Collmex::Api::Cmxknd do
 
