@@ -58,12 +58,13 @@ module Collmex
     end
 
     def self.stringify(data, type)
+      return "" if data.nil?
       case type
-      when :integer then (data.nil?)? data.to_s : data.to_i.to_s
-      when :string then data.to_s
-      when :float then sprintf("%.2f",data).gsub('.',',')
-      when :currency then Collmex::Api.stringify_currency(data)
-      when :date then data.strftime("%Y%m%d") unless data.nil?
+      when :integer  then data.to_i.to_s
+      when :string   then data
+      when :float    then sprintf("%.2f", data).gsub('.', ',')
+      when :currency then stringify_currency(data)
+      when :date     then data.strftime("%Y%m%d")
       end
     end
 
@@ -79,8 +80,6 @@ module Collmex
     end
   end
 end
-
-
 
 module Collmex
   module Api
