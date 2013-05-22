@@ -53,6 +53,7 @@ describe Collmex::Api do
               { type: :integer,     input: -2.2,              outcome: "-2" },
               { type: :integer,     input: "-2.2",            outcome: "-2" },
 
+              { type: :float,       input: nil,               outcome: "" },
               { type: :float,       input: 2.2,               outcome: "2,20" },
               { type: :float,       input: 2,                 outcome: "2,00" },
               { type: :float,       input: "2",               outcome: "2,00" },
