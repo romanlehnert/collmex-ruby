@@ -2,3 +2,4 @@
 *.gem
 README.html
 Gemfile.lock
+coverage
