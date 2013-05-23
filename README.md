@@ -3,8 +3,9 @@
 A Ruby lib for speaking with the german accounting software collmex.
 
 [![Build Status](https://secure.travis-ci.org/romanlehnert/collmex-ruby.png)](http://travis-ci.org/romanlehnert/collmex-ruby)
-[![Dependency Status](https://gemnasium.com/romanlehnert/collmex-ruby.png "Dependency Status")](https://gemnasium.com/romanlehnert/collmex-ruby)
-
+[![Code Climate](https://codeclimate.com/github/romanlehnert/collmex-ruby.png)](https://codeclimate.com/github/romanlehnert/collmex-ruby)
+[![Dependency Status](https://gemnasium.com/romanlehnert/collmex-ruby.png)](https://gemnasium.com/romanlehnert/collmex-ruby)
+[![Coverage Status](https://coveralls.io/repos/romanlehnert/collmex-ruby/badge.png)](https://coveralls.io/r/romanlehnert/collmex-ruby)
 
 ## Add it to your project
 

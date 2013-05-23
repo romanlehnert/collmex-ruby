@@ -1,6 +1,8 @@
 require "rspec"
 require "awesome_print"
 require "vcr"
+require 'coveralls'
+Coveralls.wear!
 
 RSpec.configure do |config|
   config.color_enabled = true

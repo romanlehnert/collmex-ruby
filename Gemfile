@@ -7,3 +7,4 @@ gem "guard-rspec"
 gem "guard-bundler"
 gem "awesome_print"
 gem "rake"
+gem 'coveralls', require: false
