@@ -1,6 +1,3 @@
-require 'collmex/api'
-require 'collmex/request'
-
 module Collmex
 
   class << self
@@ -27,3 +24,8 @@ module Collmex
 
   end
 end
+
+require 'collmex/api'
+require 'collmex/request'
+
+

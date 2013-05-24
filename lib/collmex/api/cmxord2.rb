@@ -1,0 +1,95 @@
+class Collmex::Api::Cmxord2 < Collmex::Api::Line
+  def self.specification
+    [
+      {name: :identifyer, type: :string,   fix: "CMXORD-2"},
+      {name: :order_id, type: :integer},
+      {name: :position, type: :integer},
+      {name: :order, type: :integer}, # Should be left blank
+      {name: :company_id, type: :integer, default: 1},
+      {name: :customer_id, type: :integer},
+      {name: :customer_title, type: :string},
+      {name: :customer_title_2, type: :string},
+      {name: :customer_first_name, type: :string},
+      {name: :customer_name, type: :string},
+      {name: :customer_company, type: :string},
+      {name: :customer_department, type: :string},
+      {name: :customer_street, type: :string},
+      {name: :customer_zip, type: :string},
+      {name: :customer_place, type: :string},
+      {name: :customer_country, type: :string}, # ISO code (DE)
+      {name: :customer_phone, type: :string},
+      {name: :customer_phone_2, type: :string},
+      {name: :customer_fax, type: :string},
+      {name: :customer_email, type: :string},
+      {name: :acct, type: :string},
+      {name: :customer_blz, type: :string},
+      {name: :customer_account_holders, type: :string},
+      {name: :customer_iban, type: :string},
+      {name: :customer_bic, type: :string},
+      {name: :customer_bank, type: :string},
+      {name: :customer_ustidnr, type: :string},
+      {name: :reserved, type: :integer}, # Should be left blank
+      {name: :order_id_for_customer, type: :string},
+      {name: :order_date, type: :date},
+      {name: :price_date, type: :date},
+      {name: :terms_of_payment, type: :integer},
+      {name: :currency, type: :string}, # ISO code (EUR)
+      {name: :price_group, type: :integer},
+      {name: :discount_group, type: :integer},
+      {name: :closing_off, type: :integer},
+      {name: :discount_ground, type: :string},
+      {name: :confirmation_text, type: :string},
+      {name: :final_text, type: :string},
+      {name: :internal_memo, type: :string},
+      {name: :billing_allowed, type: :integer},
+      {name: :partial_deliveries_allowed, type: :integer},
+      {name: :deleted, type: :integer},
+      {name: :status, type: :integer},
+      {name: :language, type: :integer}, # 0 = German, 1 = English
+      {name: :editor, type: :integer},
+      {name: :mediator, type: :integer},
+      {name: :system_name, type: :string},
+      {name: :closing_off_2, type: :currency},
+      {name: :closing_off_2_base, type: :string},
+      {name: :reserved_2, type: :string}, # Should be left blank
+      {name: :canceled_on, type: :date},
+      {name: :dispatch, type: :integer},
+      {name: :returns, type: :currency},
+      {name: :collection_fee, type: :currency},
+      {name: :terms_of_delivery, type: :string},
+      {name: :additional_delivery_conditions, type: :string},
+      {name: :delivery_address_title, type: :string},
+      {name: :delivery_address_title_2, type: :string},
+      {name: :delivery_address_first_name, type: :string},
+      {name: :delivery_address_name, type: :string},
+      {name: :delivery_address_company, type: :string},
+      {name: :delivery_address_department, type: :string},
+      {name: :delivery_address_street, type: :string},
+      {name: :delivery_address_zip, type: :string},
+      {name: :delivery_address_place, type: :string},
+      {name: :delivery_address_country, type: :string}, # ISO code (DE)
+      {name: :delivery_address_phone, type: :string},
+      {name: :delivery_address_phone_2, type: :string},
+      {name: :delivery_address_fax, type: :string},
+      {name: :delivery_address_email, type: :string},
+      {name: :position_type, type: :integer},
+      {name: :product_number, type: :string},
+      {name: :product_description, type: :string},
+      {name: :unit, type: :string}, # ISO code (EUR)
+      {name: :quantity, type: :float},
+      {name: :price, type: :currency},
+      {name: :delivery_date, type: :date},
+      {name: :price_quantity, type: :float},
+      {name: :item_discount, type: :currency}, # In percents
+      {name: :position_value, type: :currency},
+      {name: :product, type: :integer},
+      {name: :tax_classification, type: :integer},
+      {name: :control_abroad, type: :integer},
+      {name: :revenue_element, type: :integer},
+      {name: :fully_delivered, type: :integer},
+      {name: :finally_settled, type: :integer}
+    ]
+  end
+end
+
+
