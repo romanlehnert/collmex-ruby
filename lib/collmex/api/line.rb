@@ -1,9 +1,11 @@
 class Collmex::Api::Line
 
+  # Holds the specification of the line object
   def self.specification
     {}
   end
 
+  # Return an empty default-hash of the line.
   def self.default_hash
     hash = {}
     self.specification.each_with_index do |field_spec, index|
@@ -18,6 +20,8 @@ class Collmex::Api::Line
     hash
   end
 
+  # returns a hash of the line that inherits from the default_hash but gets
+  # filled with its contents.
   def self.hashify(data)
     hash = self.default_hash
     fields_spec = self.specification
@@ -46,7 +50,6 @@ class Collmex::Api::Line
 
 
   def initialize(arg = nil)
-    #puts self.class.name
     @hash = self.class.default_hash
     @hash = @hash.merge(self.class.hashify(arg)) if !arg.nil?
     if self.class.specification.empty? && self.class.name.to_s != "Collmex::Api::Line"
