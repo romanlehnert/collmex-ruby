@@ -2,16 +2,16 @@
 http_interactions:
 - request:
     method: post
-    uri: https://www.collmex.de/cgi-bin/cgi.exe?112249,0,data_exchange
+    uri: https://www.collmex.de/cgi-bin/cgi.exe?112992,0,data_exchange
     body:
-      encoding: US-ASCII
-      string: ! 'LOGIN;4109488;6642111
+      encoding: ISO-8859-1
+      string: ! 'LOGIN;8173635;7344708
 
         CUSTOMER_GET;"";1;"";"";"";"";"";"";"";"";"";""
 
-        ACCDOC_GET;1;"";"";"";"";"";"";"";"";"";"";;;"";"";""
+        ACCDOC_GET;1;"";"";"";"";"";"";"";"";"";"";"";"";"";"";""
 
-        ACCDOC_GET;1;"";"";"";"";"";"";"";"";"";"";;;"";"";""
+        ACCDOC_GET;1;"";"";"";"";"";"";"";"";"";"";"";"";"";"";""
 
 '
     headers:
@@ -32,20 +32,20 @@ http_interactions:
         NDIy
       !binary "Q29udGVudC1UeXBl":
       - !binary |-
-        dGV4dC9wbGFpbjsgbmFtZT0iMTMxODhfcmVzLnRtcCI=
+        dGV4dC9wbGFpbjsgbmFtZT0iMzI0MF9yZXMudG1wIg==
       !binary "U2VydmVy":
       - !binary |-
         TWljcm9zb2Z0LUlJUy83LjU=
       !binary "Q29udGVudC1EaXNwb3NpdGlvbg==":
       - !binary |-
-        aW5saW5lOyBmaWxlbmFtZT0iMTMxODhfcmVzLnRtcCI=
+        aW5saW5lOyBmaWxlbmFtZT0iMzI0MF9yZXMudG1wIg==
       !binary "RGF0ZQ==":
       - !binary |-
-        V2VkLCAyNCBBcHIgMjAxMyAxNjoxOTozMyBHTVQ=
+        U3VuLCAyNiBNYXkgMjAxMyAxNjo0Mzo1OCBHTVQ=
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        Q01YS05EOzk5OTk7MSByb21hbiBrZWhuZXJ0Ozs7OztBbGxnZW1laW5lciBH
+        Q01YS05EOzk5OTk7MSBSb21hbiBMZWhuZXJ0Ozs7OztBbGxnZW1laW5lciBH
         ZXNjaORmdHNwYXJ0bmVyOzs7Ozs7MDtERTs7Ozs7Ozs7Ozs7MCAzMCBUYWdl
         IG9obmUgQWJ6dWc7MCA7OzsxIEUtTWFpbDs7OzswIFN0YW5kYXJkO0VVUjsw
         Ozs7MDswOzswIERldXRzY2g7Ow0KTUVTU0FHRTtTOzIwODAxMztDVVNUT01F
@@ -56,5 +56,5 @@ http_interactions:
         /GJlcnRyYWd1bmcgZXJmb2xncmVpY2guIEVzIHd1cmRlbiAzIERhdGVuc+R0
         emUgdmVyYXJiZWl0ZXQuDQo=
     http_version: 
-  recorded_at: Wed, 24 Apr 2013 16:19:29 GMT
-recorded_with: VCR 2.2.4
+  recorded_at: Sun, 26 May 2013 16:44:00 GMT
+recorded_with: VCR 2.5.0
