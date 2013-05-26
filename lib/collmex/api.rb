@@ -15,30 +15,20 @@ module Collmex::Api
     return false
   end
 
-  # Parse a given line given as a string or array and returns
-  # a Collmex::Api::Xyz object for thegiven line that inherits
+  # Parse a line given as a string or array and return
+  # a Collmex::Api::Xyz object for it that inherits
   # from Collmex::Api::Line
   def self.parse_line(line)
-
     # in case the line is already an array
-    if line.is_a?(Array) and line.first.is_a?(String)
+    if line.is_a?(Array) && line.first.is_a?(String) || line.is_a?(String) && line = CSV.parse_line(line, Collmex.csv_opts)
       identifyer = line.first.split(/_|-/).map { |s| s.downcase.capitalize }.join
       if self.line_class_exists?(identifyer)
         Collmex::Api.const_get(identifyer).new(line)
       else
         raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\" (\"#{line.first}\")"
       end
-
-      # in casethe line is a string, we handle it as csv and parse it first
-    elsif line.is_a?(String) && parsed_line = CSV.parse_line(line, Collmex.csv_opts)
-      identifyer = parsed_line.first.split(/_|-/).map { |s| s.downcase.capitalize }.join
-      if self.line_class_exists?(identifyer)
-        Collmex::Api.const_get(identifyer).new(parsed_line)
-      else
-        raise "Could not find a Collmex::Api::Line class for \"#{identifyer}\" (\"#{parsed_line.first}\")"
-      end
     else
-      raise "Could not parse a Collmex::Api Line from #{line.inspect}"
+      raise "Could not parse the given line"
     end
   end
 
