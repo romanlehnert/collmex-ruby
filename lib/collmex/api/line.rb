@@ -70,11 +70,7 @@ class Collmex::Api::Line
 
 
   def to_csv
-    array = []
-    self.class.specification.each do |spec|
-      array << Collmex::Api.stringify(@hash[spec[:name]], spec[:type])
-    end
-    CSV.generate_line(array, Collmex.csv_opts)
+    CSV.generate_line(self.to_stringified_array, Collmex.csv_opts)
   end
 
   def to_h
