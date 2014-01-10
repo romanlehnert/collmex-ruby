@@ -45,6 +45,9 @@ class Collmex::Api::Cmxknd < Collmex::Api::Line
       { name: :output_language  , type: :integer                            },
       { name: :email_cc         , type: :string                             },
       { name: :phone_2          , type: :string                             },
+      { name: :sepa_mandate_reference, type: :string                        },
+      { name: :sepa_mandate_signature_date, type: :date                     },
+      { name: :dunning_block    , type: :integer                            },
     ]
   end
 end

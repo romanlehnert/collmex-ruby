@@ -488,13 +488,16 @@ describe Collmex::Api::Cmxknd do
             { name: :output_language  , type: :integer                            },
             { name: :email_cc         , type: :string                             },
             { name: :phone_2          , type: :string                             },
+            { name: :sepa_mandate_reference, type: :string                        },
+            { name: :sepa_mandate_signature_date, type: :date                     },
+            { name: :dunning_block    , type: :integer                            },
           ]
 
   specify { described_class.specification.should eql spec }
 
   subject { described_class.new( {id: 1} ) }
 
-  output = ["CMXKND", nil, 1, "", "", "", "", "", "", "", "", "", "", nil, "", "", "", "", "", "", "", "", "", "", "", nil, nil, "", "", nil, "", nil, "", nil, "", nil, "", nil, nil, nil, "", nil, "", ""]
+  output = ["CMXKND", nil, 1, "", "", "", "", "", "", "", "", "", "", nil, "", "", "", "", "", "", "", "", "", "", "", nil, nil, "", "", nil, "", nil, "", nil, "", nil, "", nil, nil, nil, "", nil, "", "", "", nil, nil]
 
   specify { subject.to_a.should eql output }
 end
