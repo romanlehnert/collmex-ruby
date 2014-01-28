@@ -95,4 +95,5 @@ require "collmex/api/cmxord2"
 require "collmex/api/sales_order_get"
 require "collmex/api/accbal_get"
 require "collmex/api/accbal"
+require "collmex/api/cmxums"
 
