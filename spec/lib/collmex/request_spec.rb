@@ -109,7 +109,7 @@ describe Collmex::Request do
     end
 
     let(:http) do
-      http = mock(Net::HTTP)
+      http = double(Net::HTTP)
       http.stub("use_ssl=")
       http.stub("verify_mode=")
       http.stub(:request_post).and_return(response)
@@ -117,7 +117,7 @@ describe Collmex::Request do
     end
 
     let(:response) do 
-      response = mock(Net::HTTPOK)
+      response = double(Net::HTTPOK)
       response.stub(:body).and_return("fuckmehard")
       response.stub(:code).and_return(200)
       response
