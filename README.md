@@ -18,7 +18,7 @@ gem "collmex-ruby", require: "collmex"
 
 ## Configuration
 
-In your code (in a rails-projekt you might create a config/initializers/collmex-ruby.rb) you can setup your credentials:
+In your code (in a rails-project you might create a config/initializers/collmex-ruby.rb) you can setup your credentials:
 
 ```ruby
 Collmex.setup_login_data( username: "123456", password: "123456", customer_id: "123456" )
