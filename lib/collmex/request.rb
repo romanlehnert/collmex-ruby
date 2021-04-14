@@ -82,7 +82,7 @@ module Collmex
       @raw_response[:string] = response.body.encode("UTF-8")
 
       begin
-        @raw_response[:array]  = CSV.parse(@raw_response[:string], Collmex.csv_opts)
+        @raw_response[:array]  = CSV.parse(@raw_response[:string], **Collmex.csv_opts)
       rescue => e
         STDERR.puts "CSV.parse failed with string: #{@raw_response[:string]}" if self.debug
         raise e
