@@ -20,7 +20,7 @@ module Collmex::Api
   # from Collmex::Api::Line
   def self.parse_line(line)
     # in case the line is already an array
-    if line.is_a?(Array) && line.first.is_a?(String) || line.is_a?(String) && line = CSV.parse_line(line, Collmex.csv_opts)
+    if line.is_a?(Array) && line.first.is_a?(String) || line.is_a?(String) && line = CSV.parse_line(line, **Collmex.csv_opts)
       identifyer = line.first.split(/_|-/).map { |s| s.downcase.capitalize }.join
       if self.line_class_exists?(identifyer)
         Collmex::Api.const_get(identifyer).new(line)
@@ -95,4 +95,5 @@ require "collmex/api/cmxord2"
 require "collmex/api/sales_order_get"
 require "collmex/api/accbal_get"
 require "collmex/api/accbal"
+require "collmex/api/cmxums"
 

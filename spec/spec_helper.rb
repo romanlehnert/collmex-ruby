@@ -5,10 +5,9 @@ require 'coveralls'
 Coveralls.wear!
 
 RSpec.configure do |config|
-  config.color_enabled = true
+  config.color = true
   config.filter_run :focus => true
   config.run_all_when_everything_filtered = true
-  config.treat_symbols_as_metadata_keys_with_true_values = true
 
   config.before(:each) do
     Collmex.setup_login_data({username: "8866413", password: "2291502", customer_id: "104156"})
