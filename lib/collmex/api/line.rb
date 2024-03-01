@@ -26,7 +26,7 @@ class Collmex::Api::Line
     hash = self.default_hash
     fields_spec = self.specification
 
-    if data.is_a?(Array) || data.is_a?(String) && data = CSV.parse_line(data,Collmex.csv_opts)
+    if data.is_a?(Array) || data.is_a?(String) && data = CSV.parse_line(data, **Collmex.csv_opts)
       fields_spec.each_with_index do |field_spec, index|
         if !data[index].nil? && !field_spec.has_key?(:fix)
           hash[field_spec[:name]] = Collmex::Api.parse_field(data[index], field_spec[:type])
@@ -70,7 +70,7 @@ class Collmex::Api::Line
 
 
   def to_csv
-    CSV.generate_line(self.to_stringified_array, Collmex.csv_opts)
+    CSV.generate_line(self.to_stringified_array, **Collmex.csv_opts)
   end
 
   def to_h

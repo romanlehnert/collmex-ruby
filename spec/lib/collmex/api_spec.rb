@@ -22,12 +22,12 @@ describe Collmex::Api do
   describe ".is_a_collmex_api_line_obj?" do
     it "should fail for an array" do
       a = Array.new
-      described_class.is_a_collmex_api_line_obj?(a).should be_false
+      described_class.is_a_collmex_api_line_obj?(a).should be_falsey
     end
 
     it "should succeed for a Collmex::Api Object" do
       b = Collmex::Api::AccdocGet.new()
-      described_class.is_a_collmex_api_line_obj?(b).should be_true
+      described_class.is_a_collmex_api_line_obj?(b).should be_truthy
     end
   end
 
