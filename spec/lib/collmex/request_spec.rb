@@ -4,13 +4,13 @@ describe Collmex::Request do
 
   describe ".run" do
     it "should return an instance of Colmex::Request" do
-      Collmex::Request.any_instance.stub(:execute)
-      Collmex::Request.run.should be_a Collmex::Request
+      allow_any_instance_of(Collmex::Request).to receive(:execute)
+      expect(Collmex::Request.run).to be_a Collmex::Request
     end
 
     it "should execute a given block" do
-      Collmex::Request.any_instance.stub(:execute)
-      Collmex::Request.any_instance.should_receive(:dump).with("arr").and_return("blaaaa")
+      allow_any_instance_of(Collmex::Request).to receive(:execute)
+      expect_any_instance_of(Collmex::Request).to receive(:dump).with("arr").and_return("blaaaa")
       Collmex::Request.run do
         dump "arr"
       end
@@ -19,11 +19,11 @@ describe Collmex::Request do
 
   describe ".uri" do
     subject { Collmex::Request.uri }
-    specify { subject.to_s.should eql "https://www.collmex.de/cgi-bin/cgi.exe?#{Collmex.customer_id},0,data_exchange" }
+    specify { expect(subject.to_s).to eql "https://www.collmex.de/cgi-bin/cgi.exe?#{Collmex.customer_id},0,data_exchange" }
   end
 
   subject { described_class.new }
-  specify { subject.should be_a Collmex::Request }
+  specify { expect(subject).to be_a Collmex::Request }
 
 
 
@@ -31,12 +31,12 @@ describe Collmex::Request do
 
     it "should raise an error if no credentials given" do
       Collmex.reset_login_data
-      lambda { Collmex::Request.new }.should raise_error "No credentials for collmex given"
+      expect { Collmex::Request.new }.to raise_error "No credentials for collmex given"
     end
 
     it "should add the Login command to its own queue" do
       request = Collmex::Request.new
-      request.commands.count.should eql 1
+      expect(request.commands.count).to eql 1
     end
   end
 
@@ -44,11 +44,11 @@ describe Collmex::Request do
 
     it "should add the given command to its command array" do
       request = Collmex::Request.new 
-      request.should be_a Collmex::Request
+      expect(request).to be_a Collmex::Request
       
       request.commands = Array.new
       request.add_command "asd"
-      request.commands.count.should eql 1
+      expect(request.commands.count).to eql 1
     end
   end
 
@@ -57,8 +57,8 @@ describe Collmex::Request do
     subject { Collmex::Request }
 
     specify do
-      subject.classify(:accdoc_get).should eql "AccdocGet"
-      subject.classify(:accDoc_get).should eql "AccdocGet"
+      expect(subject.classify(:accdoc_get)).to eql "AccdocGet"
+      expect(subject.classify(:accDoc_get)).to eql "AccdocGet"
     end
   end
 
@@ -68,14 +68,14 @@ describe Collmex::Request do
       let(:request) { Collmex::Request.new }
 
       it "should return a command object" do
-        request.enqueue(:accdoc_get).should be_a Collmex::Api::AccdocGet
+        expect(request.enqueue(:accdoc_get)).to be_a Collmex::Api::AccdocGet
       end
 
       it "should enqueue the given comands" do 
         initial_count = request.commands.count 
         request.enqueue :accdoc_get 
         request.enqueue :accdoc_get, :accdoc_id => 1
-        request.commands.count.should equal (initial_count + 2)
+        expect(request.commands.count).to equal (initial_count + 2)
       end
     end
 
@@ -85,15 +85,15 @@ describe Collmex::Request do
 
       it "should retun the command object" do
         cmd_obj = Collmex::Api::AccdocGet.new()
-        request.enqueue(cmd_obj).should eql cmd_obj
+        expect(request.enqueue(cmd_obj)).to eql cmd_obj
       end
 
       it "should enqueue the command object" do 
         initial_count = request.commands.count
         cmd_obj = Collmex::Api::AccdocGet.new()
         request.enqueue cmd_obj
-        request.commands.count.should eql (initial_count + 1)
-        request.commands.last.should eql cmd_obj
+        expect(request.commands.count).to eql (initial_count + 1)
+        expect(request.commands.last).to eql cmd_obj
       end
     end
         
@@ -103,59 +103,59 @@ describe Collmex::Request do
   describe ".execute" do
 
     before(:each) do 
-      Net::HTTP.stub(:new).and_return(http)
-      Net::HTTP.stub(:request_post).and_return(response)
-      Collmex::Api.stub(:parse_line)
+      allow(Net::HTTP).to receive(:new).and_return(http)
+      allow(Net::HTTP).to receive(:request_post).and_return(response)
+      allow(Collmex::Api).to receive(:parse_line)
     end
 
     let(:http) do
       http = double(Net::HTTP)
-      http.stub("use_ssl=")
-      http.stub("verify_mode=")
-      http.stub(:request_post).and_return(response)
+      allow(http).to receive("use_ssl=")
+      allow(http).to receive("verify_mode=")
+      allow(http).to receive(:request_post).and_return(response)
       http
     end
 
     let(:response) do 
       response = double(Net::HTTPOK)
-      response.stub(:body).and_return("fuckmehard")
-      response.stub(:code).and_return(200)
+      allow(response).to receive(:body).and_return("fuckmehard")
+      allow(response).to receive(:code).and_return(200)
       response
     end
 
     it "should create an instance of net::http" do
-      Net::HTTP.should_receive(:new).and_return(http)
+      expect(Net::HTTP).to receive(:new).and_return(http)
       subject.execute
     end
 
     it "should use ssl" do
-      http.should_receive("use_ssl=").with(true)
+      expect(http).to receive("use_ssl=").with(true)
       subject.execute
     end
 
     it "should not verify ssl" do
-      http.should_receive("verify_mode=").with(OpenSSL::SSL::VERIFY_NONE)
+      expect(http).to receive("verify_mode=").with(OpenSSL::SSL::VERIFY_NONE)
       subject.execute
     end
 
     it "shoud do the post_request" do
-      http.should_receive(:request_post).with(anything,anything,{"Content-Type" => "text/csv"}).and_return(response)
+      expect(http).to receive(:request_post).with(anything,anything,{"Content-Type" => "text/csv"}).and_return(response)
       subject.execute
     end
 
     context "with a working connection" do
       
       it "should parse the response" do
-        subject.stub(:parse_response).and_return( [Collmex::Api::Accdoc.new])
-        subject.should_receive(:parse_response)
+        allow(subject).to receive(:parse_response).and_return( [Collmex::Api::Accdoc.new])
+        expect(subject).to receive(:parse_response)
         subject.execute
       end
       it "the response should be encoded in utf-8" do
         string = "Allgemeiner Gesch\xE4ftspartne".force_encoding("ASCII-8BIT")
-        response.stub(:body).and_return(string)
+        allow(response).to receive(:body).and_return(string)
         subject.execute      
       
-        subject.instance_variable_get(:@raw_response)[:string].encoding.to_s.should eql "UTF-8"
+        expect(subject.instance_variable_get(:@raw_response)[:string].encoding.to_s).to eql "UTF-8"
       end
 
     end

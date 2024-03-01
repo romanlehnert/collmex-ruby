@@ -6,9 +6,9 @@ require "vcr"
 
 
 describe Collmex do
-  it {should respond_to :username}
-  it {should respond_to :password}
-  it {should respond_to :customer_id}
+  it {is_expected.to respond_to :username}
+  it {is_expected.to respond_to :password}
+  it {is_expected.to respond_to :customer_id}
 end
 
 
@@ -38,7 +38,7 @@ describe "CollmexIntegration" do
     end
     
     VCR.use_cassette('standard_request') do
-      request.response.last.success?.should eql true
+      expect(request.response.last.success?).to eql true
     end
 
   end
